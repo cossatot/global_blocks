@@ -227,6 +227,7 @@ vel_groups = Oiler.group_vels_by_fix_mov(vels)
 @time results = Oiler.solve_block_invs_from_vel_groups(vel_groups,
             tris=tris,
             faults=faults,
+            elastic_floor=5e-5,
             tri_distance_weight=tri_distance_weight,
             regularize_tris=true,
             predict_vels=true,
