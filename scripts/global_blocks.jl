@@ -30,6 +30,10 @@ chn_block_file = "/home/itchy/research/gem/fault_data/china/block_data/chn_block
 chn_fault_file = "/home/itchy/research/gem/fault_data/china/block_data/chn_faults.geojson"
 chn_slip_rate_file = "/home/itchy/research/gem/fault_data/china/block_data/geol_slip_rate_pts.geojson"
 
+# ANA
+ana_block_file = "/home/itchy/research/geodesy/global_block_comps/anatolia/block_data/anatolia_blocks.geojson"
+ana_fault_file = "/home/itchy/research/geodesy/global_block_comps/anatolia/block_data/anatolia_faults.geojson"
+
 
 # CAS
 cas_block_file = "/home/itchy/research/cascadia/cascadia_blocks/data/cascadia_blocks.geojson"
@@ -59,12 +63,19 @@ gsrm_midas_ak_vels_file = "/home/itchy/research/cascadia/cascadia_blocks/data/ve
 @info "joining blocks"
 cea_blocks = Oiler.IO.gis_vec_file_to_df(cea_block_file)
 chn_blocks = Oiler.IO.gis_vec_file_to_df(chn_block_file)
+ana_blocks = Oiler.IO.gis_vec_file_to_df(ana_block_file)
 cas_blocks = Oiler.IO.gis_vec_file_to_df(cas_block_file)
 sus_blocks = Oiler.IO.gis_vec_file_to_df(sus_block_file)
 glo_blocks = Oiler.IO.gis_vec_file_to_df(glo_block_file)
 
-block_df = vcat(cea_blocks, chn_blocks, cas_blocks, sus_blocks, glo_blocks; 
+block_df = vcat(cea_blocks, 
+                chn_blocks,
+                ana_blocks,
+                cas_blocks,
+                sus_blocks,
+                glo_blocks; 
                 cols=:union)
+
 println("n blocks: ", size(block_df, 1))
 
 
@@ -73,6 +84,7 @@ println("n blocks: ", size(block_df, 1))
 asia_fault_df, asia_faults, asia_fault_vels = Oiler.IO.process_faults_from_gis_files(
                                         cea_fault_file,
                                         chn_fault_file,
+                                        ana_fault_file,
                                         #cas_fault_file,
                                         #sus_fault_file;
                                         block_df=block_df)
@@ -227,7 +239,7 @@ vel_groups = Oiler.group_vels_by_fix_mov(vels)
 @time results = Oiler.solve_block_invs_from_vel_groups(vel_groups,
             tris=tris,
             faults=faults,
-            elastic_floor=5e-5,
+            elastic_floor=1e-4,
             tri_distance_weight=tri_distance_weight,
             regularize_tris=true,
             predict_vels=true,
