@@ -34,6 +34,10 @@ chn_slip_rate_file = "/home/itchy/research/gem/fault_data/china/block_data/geol_
 ana_block_file = "/home/itchy/research/geodesy/global_block_comps/anatolia/block_data/anatolia_blocks.geojson"
 ana_fault_file = "/home/itchy/research/geodesy/global_block_comps/anatolia/block_data/anatolia_faults.geojson"
 
+# NEA
+nea_block_file = "/home/itchy/research/geodesy/global_block_comps/ne_asia_blocks/ne_asia_blocks_.geojson"
+nea_fault_file = "/home/itchy/research/geodesy/global_block_comps/ne_asia_blocks/ne_asia_faults_.geojson"
+nea_slip_rate_file = "/home/itchy/research/geodesy/global_block_comps/ne_asia_blocks/ne_asia_slip_rates.geojson"
 
 # CAS
 cas_block_file = "/home/itchy/research/cascadia/cascadia_blocks/data/cascadia_blocks.geojson"
@@ -64,6 +68,7 @@ gsrm_midas_ak_vels_file = "/home/itchy/research/cascadia/cascadia_blocks/data/ve
 cea_blocks = Oiler.IO.gis_vec_file_to_df(cea_block_file)
 chn_blocks = Oiler.IO.gis_vec_file_to_df(chn_block_file)
 ana_blocks = Oiler.IO.gis_vec_file_to_df(ana_block_file)
+nea_blocks = Oiler.IO.gis_vec_file_to_df(nea_block_file)
 cas_blocks = Oiler.IO.gis_vec_file_to_df(cas_block_file)
 sus_blocks = Oiler.IO.gis_vec_file_to_df(sus_block_file)
 glo_blocks = Oiler.IO.gis_vec_file_to_df(glo_block_file)
@@ -71,6 +76,7 @@ glo_blocks = Oiler.IO.gis_vec_file_to_df(glo_block_file)
 block_df = vcat(cea_blocks, 
                 chn_blocks,
                 ana_blocks,
+                nea_blocks,
                 cas_blocks,
                 sus_blocks,
                 glo_blocks; 
@@ -85,6 +91,7 @@ asia_fault_df, asia_faults, asia_fault_vels = Oiler.IO.process_faults_from_gis_f
                                         cea_fault_file,
                                         chn_fault_file,
                                         ana_fault_file,
+                                        nea_fault_file,
                                         #cas_fault_file,
                                         #sus_fault_file;
                                         block_df=block_df)
@@ -116,8 +123,12 @@ println("n fault vels: ", length(fault_vels))
 @info "doing geol slip rates"
 cea_slip_rate_df = Oiler.IO.gis_vec_file_to_df(cea_slip_rate_file)
 chn_slip_rate_df = Oiler.IO.gis_vec_file_to_df(chn_slip_rate_file)
+nea_slip_rate_df = Oiler.IO.gis_vec_file_to_df(nea_slip_rate_file)
 
-asia_slip_rate_df = vcat(cea_slip_rate_df, chn_slip_rate_df)
+asia_slip_rate_df = vcat(cea_slip_rate_df, 
+                         chn_slip_rate_df, 
+                         nea_slip_rate_df
+                         )
 asia_slip_rate_df, asia_slip_rate_vels = Oiler.IO.make_geol_slip_rate_vels!(
                                             asia_slip_rate_df, fault_df)
 
@@ -243,7 +254,7 @@ vel_groups = Oiler.group_vels_by_fix_mov(vels)
             tri_distance_weight=tri_distance_weight,
             regularize_tris=true,
             predict_vels=true,
-            pred_se=true,
+            pred_se=false,
             check_closures=true,
             constraint_method="kkt_sym")
 
