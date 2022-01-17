@@ -53,6 +53,8 @@ exp_point_file = "/home/itchy/research/cascadia/cascadia_blocks/data/explorer_ve
 sus_block_file = "/home/itchy/research/us_faults/s_us_faults/s_us_blocks.geojson"
 sus_fault_file = "/home/itchy/research/us_faults/s_us_faults/s_us_faults.geojson"
 sus_geol_rates_file = "/home/itchy/research/us_faults/s_us_faults/new_us_faults_geol_slip_rates.geojson"
+cali_geol_slip_rates_file = "../../../us_faults/s_us_faults/ca_geol_slip_rates.geojson"
+
 
 # JPN
 jpn_block_file = "/home/itchy/research/geodesy/global_block_comps/japan_blocks/block_data/japan_blocks.geojson"
@@ -90,7 +92,7 @@ block_df = vcat(cea_blocks,
                 nea_blocks,
                 cas_blocks,
                 sus_blocks,
-                jpn_blocks,
+                #jpn_blocks,
                 glo_blocks; 
                 cols=:union)
 
@@ -103,35 +105,37 @@ asia_fault_df, asia_faults, asia_fault_vels = Oiler.IO.process_faults_from_gis_f
                                         chn_fault_file,
                                         ana_fault_file,
                                         nea_fault_file,
-                                        #jpn_fault_file,
-                                        #cas_fault_file,
-                                        #sus_fault_file;
                                         block_df=block_df,
-                                        subset_in_bounds=false)
+                                        subset_in_bounds=true)
 
 # need to have large uncertaintes for Japan
 jpn_fault_df, jpn_faults, jpn_fault_vels = Oiler.IO.process_faults_from_gis_files(
                                         jpn_fault_file,
                                         block_df=block_df,
+                                        usd_default=1.,
                                         lsd_default=4.,
                                         e_default=1e5,
                                         )
 
 
 nam_fault_df, nam_faults, nam_fault_vels = Oiler.IO.process_faults_from_gis_files(
-                                        #cea_fault_file,
-                                        #chn_fault_file,
                                         cas_fault_file,
                                         sus_fault_file;
                                         block_df=block_df,
                                         usd=:upper_seis_depth,
                                         lsd=:lower_seis_depth,
-                                        subset_in_bounds=false)
+                                        subset_in_bounds=true)
 rename!(nam_fault_df, :upper_seis_depth => :usd)
 rename!(nam_fault_df, :lower_seis_depth => :lsd)
 
-fault_df = vcat(asia_fault_df, nam_fault_df, cols=:union)
-faults = vcat(asia_faults, nam_faults)
+fault_df = vcat(asia_fault_df, 
+                nam_fault_df, 
+                #jpn_fault_df, 
+                cols=:union)
+faults = vcat(asia_faults, 
+              nam_faults, 
+              #jpn_faults,
+              )
 
 # not sure if I need this
 jdf_ridge_vels = filter( x -> x.mov == "c006", nam_fault_vels)
@@ -139,7 +143,9 @@ nam_fault_vels = filter( x -> x.mov != "c006", nam_fault_vels)
 
 fault_vels = vcat([jdf_ridge_vels[1]], 
                   nam_fault_vels, 
-                  asia_fault_vels)
+                  asia_fault_vels,
+                  #jpn_fault_vels,
+                  )
 
 println("n faults: ", length(faults))
 println("n fault vels: ", length(fault_vels))
@@ -159,9 +165,10 @@ asia_slip_rate_df, asia_slip_rate_vels = Oiler.IO.make_geol_slip_rate_vels!(
 
 cas_geol_slip_rate_df = Oiler.IO.gis_vec_file_to_df(cascadia_geol_slip_rates_file)
 sus_geol_slip_rate_df = Oiler.IO.gis_vec_file_to_df(sus_geol_rates_file)
+cal_geol_slip_rate_df = Oiler.IO.gis_vec_file_to_df(cali_geol_slip_rates_file)
 
 
-nam_geol_slip_rate_df = vcat(cas_geol_slip_rate_df, sus_geol_slip_rate_df)
+nam_geol_slip_rate_df = vcat(cas_geol_slip_rate_df, sus_geol_slip_rate_df, cal_geol_slip_rate_df)
 nam_geol_slip_rate_df, nam_geol_slip_rate_vels = Oiler.IO.make_geol_slip_rate_vels!(
                                                         nam_geol_slip_rate_df, 
                                                         fault_df;
@@ -169,8 +176,12 @@ nam_geol_slip_rate_df, nam_geol_slip_rate_vels = Oiler.IO.make_geol_slip_rate_ve
                                                         #lsd="lower_seis_depth",
                                                         )
 
-geol_slip_rate_df = vcat(asia_slip_rate_df, nam_geol_slip_rate_df, cols=:union)
-geol_slip_rate_vels = vcat(asia_slip_rate_vels, nam_geol_slip_rate_vels)
+geol_slip_rate_df = vcat(asia_slip_rate_df, 
+                         nam_geol_slip_rate_df, 
+                         cols=:union)
+geol_slip_rate_vels = vcat(asia_slip_rate_vels, 
+                           nam_geol_slip_rate_vels)
+
 
 geol_slip_rate_df[:, :dextral_err] /= geol_slip_rate_weight
 geol_slip_rate_df[:, :extension_err] /= geol_slip_rate_weight
@@ -214,38 +225,34 @@ tib_vel_df[!,"station"] = string.(tib_vel_df[!,:id])
                                                            name=:station,
                                                            epsg=2991)
 
-@info "filtering cas vels"
-
-n_cas_vels_orig = length(cas_vels)
-
-function check_duplicate_vel(vel, other_vels)
-    keep = true
-    for ovel in other_vels
-        if (abs(vel.lon - ovel.lon) < 1e-4) && (abs(vel.lat - ovel.lat) < 1e-4)
-            keep = false
-        end
-    end
-    keep
-end
-
-asia_gnss = vcat(cea_vels, com_vels)
-cas_vels = filter(x->check_duplicate_vel(x, asia_gnss), cas_vels)
-
-n_removed = n_cas_vels_orig - length(cas_vels)
-@info "  $n_removed vels removed"
+#@info "filtering cas vels"
+#
+#n_cas_vels_orig = length(cas_vels)
+#
+#function check_duplicate_vel(vel, other_vels)
+#    keep = true
+#    for ovel in other_vels
+#        if (abs(vel.lon - ovel.lon) < 1e-4) && (abs(vel.lat - ovel.lat) < 1e-4)
+#            keep = false
+#        end
+#    end
+#    keep
+#end
+#
+#asia_gnss = vcat(cea_vels, com_vels)
+#cas_vels = filter(x->check_duplicate_vel(x, asia_gnss), cas_vels)
+#
+#n_removed = n_cas_vels_orig - length(cas_vels)
+#@info "  $n_removed vels removed"
 
 
 gnss_vels = vcat(com_vels, 
                  cea_vels, 
                  tib_vels, 
-                 cas_vels)
+                 cas_vels,
+                 )
 
 println("n gnss vels: ", length(gnss_vels))
-
-@info "filtering gnss vels"
-
-
-
 
 @info "doing Explorer and JdF plates"
 
@@ -396,9 +403,9 @@ tris = vcat(cas_tris,
             mak_tris, 
             alu_tris, 
             kur_tris,
-            kjp_tris,
-            izu_tris,
-            ryu_tris,
+            #kjp_tris,
+            #izu_tris,
+            #ryu_tris,
            )
 
 
@@ -418,7 +425,8 @@ tri_distance_weight = 10.
 @time results = Oiler.solve_block_invs_from_vel_groups(vel_groups,
             tris=tris,
             faults=faults,
-            elastic_floor=1e-7,
+            #elastic_floor=0.,
+            elastic_floor=1e-5,
             tri_distance_weight=tri_distance_weight,
             regularize_tris=true,
             tri_priors=true,
@@ -427,6 +435,7 @@ tri_distance_weight = 10.
             check_closures=false,
             constraint_method="kkt_sym",
             check_nans=true,
+            sparse_lhs=true,
             factorization="lu")
 
 Oiler.ResultsAnalysis.compare_data_results(results=results,
