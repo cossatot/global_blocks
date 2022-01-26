@@ -43,7 +43,8 @@ kur_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_
 cas_block_file = "/home/itchy/research/cascadia/cascadia_blocks/data/cascadia_blocks.geojson"
 cas_fault_file = "/home/itchy/research/cascadia/cascadia_blocks/data/cascadia_block_faults.geojson"
 cascadia_geol_slip_rates_file = "/home/itchy/research/cascadia/cascadia_blocks/data/cascadia_geol_slip_rate_pts.geojson"
-cascadia_tris_file = "/home/itchy/research/cascadia/cascadia_blocks/data/graham_cascadia_subduction_tris.geojson"
+#cascadia_tris_file = "/home/itchy/research/cascadia/cascadia_blocks/data/graham_cascadia_subduction_tris.geojson"
+cascadia_tris_file = "/home/itchy/research/cascadia/cascadia_blocks/data/jdf_explorer_interface.geojson"
 aleut_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/alu_tris_slab2.geojson"
 #aleut_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/alu_tris.geojson"
 jdf_point_file = "/home/itchy/research/cascadia/cascadia_blocks/data/jdf_vel_pts.csv"
@@ -172,6 +173,7 @@ nam_geol_slip_rate_df = vcat(cas_geol_slip_rate_df, sus_geol_slip_rate_df, cal_g
 nam_geol_slip_rate_df, nam_geol_slip_rate_vels = Oiler.IO.make_geol_slip_rate_vels!(
                                                         nam_geol_slip_rate_df, 
                                                         fault_df;
+                                                        weight=geol_slip_rate_weight,
                                                         #usd="upper_seis_depth",
                                                         #lsd="lower_seis_depth",
                                                         )
@@ -183,8 +185,6 @@ geol_slip_rate_vels = vcat(asia_slip_rate_vels,
                            nam_geol_slip_rate_vels)
 
 
-geol_slip_rate_df[:, :dextral_err] /= geol_slip_rate_weight
-geol_slip_rate_df[:, :extension_err] /= geol_slip_rate_weight
 println("n geol slip rates: ", length(geol_slip_rate_vels))
 
 
@@ -224,6 +224,10 @@ tib_vel_df[!,"station"] = string.(tib_vel_df[!,:id])
                                                            en=:n_err,
                                                            name=:station,
                                                            epsg=2991)
+
+
+
+
 
 #@info "filtering cas vels"
 #
@@ -315,11 +319,13 @@ pac_eur_pole = Oiler.PoleCart(
   mov = "c024"
 )
 
+@info "kur tris"
 kur_tris = Oiler.Utils.tri_priors_from_pole(kur_tris, pac_eur_pole,
                                             locking_fraction=0.8,
                                             depth_adjust=true,
                                             err_coeff=10000.)
 
+@info "kjp tris"
 kjp_tris = Oiler.Utils.tri_priors_from_pole(kjp_tris, pac_eur_pole,
                                             locking_fraction=1.,
                                             depth_adjust=true,
@@ -341,6 +347,7 @@ pac_phi_pole = Oiler.PoleCart(
   mov = "pac"
 )
 
+@info "izu tris"
 izu_tris = Oiler.Utils.tri_priors_from_pole(izu_tris, pac_phi_pole,
                                             locking_fraction=0.8,
                                             depth_adjust=true,
@@ -360,10 +367,11 @@ phi_eur_pole = Oiler.Utils.PoleCart(
   mov = "phi",
 )
 
-ryu_tris = Oiler.Utils.tri_priors_from_pole(ryu_tris, phi_eur_pole,
-                                            locking_fraction=0.8,
-                                            depth_adjust=true,
-                                            err_coeff=10000.)
+#@info "ryu tris"
+#ryu_tris = Oiler.Utils.tri_priors_from_pole(ryu_tris, phi_eur_pole,
+#                                            locking_fraction=0.8,
+#                                            depth_adjust=true,
+#                                            err_coeff=10000.)
 
 
 pac_na_pole = Oiler.PoleCart(
@@ -380,6 +388,7 @@ pac_na_pole = Oiler.PoleCart(
   mov = "c024",
 )
 
+@info "alu tris"
 alu_tris = Oiler.Utils.tri_priors_from_pole(alu_tris, pac_na_pole,
                                               locking_fraction=0.5,
                                               depth_adjust=true,
@@ -395,8 +404,8 @@ function set_tri_rates(tri; ds=20., de=10000., ss=0., se=10000.)
     tri
 end
 
+@info "mak tris"
 mak_tris = map(set_tri_rates, mak_tris)
-alu_tris = map(set_tri_rates, alu_tris)
 
 
 tris = vcat(cas_tris, 
