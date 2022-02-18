@@ -6,9 +6,7 @@ using CSV
 using JSON
 using DataFrames:eachrow
 using DataFrames, DataFramesMeta
-using ArchGDAL
 using Setfield
-const AG = ArchGDAL
 
 using PyPlot
 
@@ -67,6 +65,7 @@ kjp_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_
 
 # other
 glo_block_file = "/home/itchy/research/geodesy/global_block_comps/global_scale_plates/global_scale_plates.geojson"
+glo_fault_file = "/home/itchy/research/geodesy/global_block_comps/global_scale_plates/global_scale_faults.geojson"
 
 # Geod
 c_asia_gsrm_vels_file = "/home/itchy/research/gem/c_asia/c_asia_blocks/gnss_data/gsrm_c_asia_vels.geojson"
@@ -99,6 +98,10 @@ block_df = vcat(cea_blocks,
 
 println("n blocks: ", size(block_df, 1))
 
+@info "removing antarctica for now"
+ant_df = filter(row -> (row.fid == "ant"), block_df)
+block_df = filter(row -> !(row.fid == "ant"), block_df)
+
 
 @info "doing faults"
 asia_fault_df, asia_faults, asia_fault_vels = Oiler.IO.process_faults_from_gis_files(
@@ -106,17 +109,18 @@ asia_fault_df, asia_faults, asia_fault_vels = Oiler.IO.process_faults_from_gis_f
                                         chn_fault_file,
                                         ana_fault_file,
                                         nea_fault_file,
+                                        glo_fault_file,
                                         block_df=block_df,
                                         subset_in_bounds=true)
 
 # need to have large uncertaintes for Japan
-jpn_fault_df, jpn_faults, jpn_fault_vels = Oiler.IO.process_faults_from_gis_files(
-                                        jpn_fault_file,
-                                        block_df=block_df,
-                                        usd_default=1.,
-                                        lsd_default=4.,
-                                        e_default=1e5,
-                                        )
+#jpn_fault_df, jpn_faults, jpn_fault_vels = Oiler.IO.process_faults_from_gis_files(
+#                                        jpn_fault_file,
+#                                        block_df=block_df,
+#                                        usd_default=1.,
+#                                        lsd_default=4.,
+#                                        e_default=1e5,
+#                                        )
 
 
 nam_fault_df, nam_faults, nam_fault_vels = Oiler.IO.process_faults_from_gis_files(
@@ -202,18 +206,18 @@ tib_vel_df[!,"station"] = string.(tib_vel_df[!,:id])
 @info " doing comet gnss vels"
 @time com_vels = Oiler.IO.make_vels_from_gnss_and_blocks(com_vel_df, block_df;
     ve=:v_east, vn=:v_north, ee=:sig_east, en=:sig_north, name=:name,
-    fix="1111", epsg=2991,
+    fix="1111", epsg=102016,
 )
 
 @info " doing Asia gsrm vels"
 @time cea_vels = Oiler.IO.make_vels_from_gnss_and_blocks(cea_vel_df, block_df;
     ve=:e_vel, vn=:n_vel, ee=:e_err, en=:n_err, name=:station,
-    fix="1111", epsg=2991,
+    fix="1111", epsg=102016,
 )
 
 @info " doing comet insar vels"
 @time tib_vels = Oiler.IO.make_vels_from_gnss_and_blocks(tib_vel_df, block_df;
-    fix="1111", epsg=2991)
+    fix="1111", epsg=102016)
 
 @info " doing NAM-rel vels"
 @time cas_vels = Oiler.IO.make_vels_from_gnss_and_blocks(cas_vel_df, block_df;
@@ -223,37 +227,27 @@ tib_vel_df[!,"station"] = string.(tib_vel_df[!,:id])
                                                            ee=:e_err,
                                                            en=:n_err,
                                                            name=:station,
-                                                           epsg=2991)
+                                                           epsg=102016)
 
 
+@info " doing NAM-rel vels (Antarctica)"
+@time ant_vels = Oiler.IO.make_vels_from_gnss_and_blocks(cas_vel_df, ant_df;
+                                                           fix="na",
+                                                           ve=:e_vel,
+                                                           vn=:n_vel,
+                                                           ee=:e_err,
+                                                           en=:n_err,
+                                                           name=:station,
+                                                           epsg=102019)
 
-
-
-#@info "filtering cas vels"
-#
-#n_cas_vels_orig = length(cas_vels)
-#
-#function check_duplicate_vel(vel, other_vels)
-#    keep = true
-#    for ovel in other_vels
-#        if (abs(vel.lon - ovel.lon) < 1e-4) && (abs(vel.lat - ovel.lat) < 1e-4)
-#            keep = false
-#        end
-#    end
-#    keep
-#end
-#
-#asia_gnss = vcat(cea_vels, com_vels)
-#cas_vels = filter(x->check_duplicate_vel(x, asia_gnss), cas_vels)
-#
-#n_removed = n_cas_vels_orig - length(cas_vels)
-#@info "  $n_removed vels removed"
-
+@info "re-adding Antarctica to blocks"
+block_df = vcat(block_df, ant_df)
 
 gnss_vels = vcat(com_vels, 
                  cea_vels, 
                  tib_vels, 
                  cas_vels,
+                 ant_vels
                  )
 
 println("n gnss vels: ", length(gnss_vels))
@@ -367,11 +361,11 @@ phi_eur_pole = Oiler.Utils.PoleCart(
   mov = "phi",
 )
 
-#@info "ryu tris"
-#ryu_tris = Oiler.Utils.tri_priors_from_pole(ryu_tris, phi_eur_pole,
-#                                            locking_fraction=0.8,
-#                                            depth_adjust=true,
-#                                            err_coeff=10000.)
+@info "ryu tris"
+ryu_tris = Oiler.Utils.tri_priors_from_pole(ryu_tris, phi_eur_pole,
+                                            locking_fraction=0.8,
+                                            depth_adjust=true,
+                                            err_coeff=10000.)
 
 
 pac_na_pole = Oiler.PoleCart(
