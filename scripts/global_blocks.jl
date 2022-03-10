@@ -66,6 +66,7 @@ kjp_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_
 # other
 glo_block_file = "/home/itchy/research/geodesy/global_block_comps/global_scale_plates/global_scale_plates.geojson"
 glo_fault_file = "/home/itchy/research/geodesy/global_block_comps/global_scale_plates/global_scale_faults.geojson"
+glo_slip_rates_file = "/home/itchy/research/geodesy/global_block_comps/global_scale_plates/global_scale_slip_rates.geojson"
 
 # Geod
 c_asia_gsrm_vels_file = "/home/itchy/research/gem/c_asia/c_asia_blocks/gnss_data/gsrm_c_asia_vels.geojson"
@@ -160,10 +161,12 @@ println("n fault vels: ", length(fault_vels))
 cea_slip_rate_df = Oiler.IO.gis_vec_file_to_df(cea_slip_rate_file)
 chn_slip_rate_df = Oiler.IO.gis_vec_file_to_df(chn_slip_rate_file)
 nea_slip_rate_df = Oiler.IO.gis_vec_file_to_df(nea_slip_rate_file)
+glo_slip_rate_df = Oiler.IO.gis_vec_file_to_df(glo_slip_rates_file)
 
 asia_slip_rate_df = vcat(cea_slip_rate_df, 
                          chn_slip_rate_df, 
-                         nea_slip_rate_df
+                         nea_slip_rate_df,
+                         glo_slip_rate_df,
                          )
 asia_slip_rate_df, asia_slip_rate_vels = Oiler.IO.make_geol_slip_rate_vels!(
                                             asia_slip_rate_df, fault_df)
@@ -407,7 +410,7 @@ tris = vcat(cas_tris,
             alu_tris, 
             kur_tris,
             #kjp_tris,
-            #izu_tris,
+            izu_tris,
             #ryu_tris,
            )
 
