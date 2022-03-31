@@ -12,7 +12,7 @@ using PyPlot
 
 # options
 geol_slip_rate_weight = 2.
-save_results = true
+save_results = false
 
 
 # load data
@@ -54,6 +54,19 @@ sus_fault_file = "/home/itchy/research/us_faults/s_us_faults/s_us_faults.geojson
 sus_geol_rates_file = "/home/itchy/research/us_faults/s_us_faults/new_us_faults_geol_slip_rates.geojson"
 cali_geol_slip_rates_file = "../../../us_faults/s_us_faults/ca_geol_slip_rates.geojson"
 
+# SAM
+sam_block_file ="/home/itchy/research/geodesy/global_block_comps/sam_blocks/block_data/sam_blocks.geojson"
+sam_fault_file ="/home/itchy/research/geodesy/global_block_comps/sam_blocks/block_data/sam_faults.geojson"
+sam_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/sam_slab2_60.geojson"
+
+# CCA
+cca_block_file = "/home/itchy/research/geodesy/global_block_comps/cca_blocks/block_data/cca_blocks.geojson"
+cca_fault_file = "/home/itchy/research/geodesy/global_block_comps/cca_blocks/block_data/cca_faults.geojson"
+cca_slip_rates_file = "/home/itchy/research/geodesy/global_block_comps/cca_blocks/block_data/cca_geol_slip_rates.geojson"
+ant_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/ant_slab2.geojson"
+cam_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/cam_slab2_fine.geojson"
+garnier_vels_file = "/home/itchy/research/geodesy/global_block_comps/cca_blocks/geod_data/garnier_et_al_2022_vels_igs08.geojson"
+
 
 # JPN
 jpn_block_file = "/home/itchy/research/geodesy/global_block_comps/japan_blocks/block_data/japan_blocks.geojson"
@@ -83,6 +96,8 @@ chn_blocks = Oiler.IO.gis_vec_file_to_df(chn_block_file)
 ana_blocks = Oiler.IO.gis_vec_file_to_df(ana_block_file)
 nea_blocks = Oiler.IO.gis_vec_file_to_df(nea_block_file)
 cas_blocks = Oiler.IO.gis_vec_file_to_df(cas_block_file)
+cca_blocks = Oiler.IO.gis_vec_file_to_df(cca_block_file)
+sam_blocks = Oiler.IO.gis_vec_file_to_df(sam_block_file)
 sus_blocks = Oiler.IO.gis_vec_file_to_df(sus_block_file)
 jpn_blocks = Oiler.IO.gis_vec_file_to_df(jpn_block_file)
 glo_blocks = Oiler.IO.gis_vec_file_to_df(glo_block_file)
@@ -93,6 +108,8 @@ block_df = vcat(cea_blocks,
                 nea_blocks,
                 cas_blocks,
                 sus_blocks,
+                sam_blocks,
+                cca_blocks,
                 #jpn_blocks,
                 glo_blocks; 
                 cols=:union)
@@ -110,9 +127,12 @@ asia_fault_df, asia_faults, asia_fault_vels = Oiler.IO.process_faults_from_gis_f
                                         chn_fault_file,
                                         ana_fault_file,
                                         nea_fault_file,
+                                        sam_fault_file,
+                                        cca_fault_file,
                                         glo_fault_file,
                                         block_df=block_df,
                                         subset_in_bounds=true)
+
 
 # need to have large uncertaintes for Japan
 #jpn_fault_df, jpn_faults, jpn_fault_vels = Oiler.IO.process_faults_from_gis_files(
@@ -134,7 +154,7 @@ nam_fault_df, nam_faults, nam_fault_vels = Oiler.IO.process_faults_from_gis_file
 rename!(nam_fault_df, :upper_seis_depth => :usd)
 rename!(nam_fault_df, :lower_seis_depth => :lsd)
 
-fault_df = vcat(asia_fault_df, 
+fault_df = vcat(asia_fault_df,
                 nam_fault_df, 
                 #jpn_fault_df, 
                 cols=:union)
@@ -161,11 +181,13 @@ println("n fault vels: ", length(fault_vels))
 cea_slip_rate_df = Oiler.IO.gis_vec_file_to_df(cea_slip_rate_file)
 chn_slip_rate_df = Oiler.IO.gis_vec_file_to_df(chn_slip_rate_file)
 nea_slip_rate_df = Oiler.IO.gis_vec_file_to_df(nea_slip_rate_file)
+cca_slip_rate_df = Oiler.IO.gis_vec_file_to_df(cca_slip_rates_file)
 glo_slip_rate_df = Oiler.IO.gis_vec_file_to_df(glo_slip_rates_file)
 
 asia_slip_rate_df = vcat(cea_slip_rate_df, 
                          chn_slip_rate_df, 
                          nea_slip_rate_df,
+                         cca_slip_rate_df,
                          glo_slip_rate_df,
                          )
 asia_slip_rate_df, asia_slip_rate_vels = Oiler.IO.make_geol_slip_rate_vels!(
@@ -202,6 +224,7 @@ cea_vel_df = Oiler.IO.gis_vec_file_to_df(c_asia_gsrm_vels_file)
 com_vel_df = Oiler.IO.gis_vec_file_to_df(comet_gnss_vels_file)
 tib_vel_df = Oiler.IO.gis_vec_file_to_df(tibet_vel_field_file)
 cas_vel_df = Oiler.IO.gis_vec_file_to_df(gsrm_midas_ak_vels_file)
+gar_vel_df = Oiler.IO.gis_vec_file_to_df(garnier_vels_file)
 
 tib_vel_df[!,"station"] = string.(tib_vel_df[!,:id])
 
@@ -222,6 +245,12 @@ tib_vel_df[!,"station"] = string.(tib_vel_df[!,:id])
 @time tib_vels = Oiler.IO.make_vels_from_gnss_and_blocks(tib_vel_df, block_df;
     fix="1111", epsg=102016)
 
+@info " doing Garnier vels"
+@time gar_vels = Oiler.IO.make_vels_from_gnss_and_blocks(gar_vel_df, block_df;
+    fix="igs08", epsg=102016,
+    ve=:e_vel, vn=:n_vel, ee=:e_rr, en=:n_err, name=:site
+)
+
 @info " doing NAM-rel vels"
 @time cas_vels = Oiler.IO.make_vels_from_gnss_and_blocks(cas_vel_df, block_df;
                                                            fix="na",
@@ -235,7 +264,7 @@ tib_vel_df[!,"station"] = string.(tib_vel_df[!,:id])
 
 @info " doing NAM-rel vels (Antarctica)"
 @time ant_vels = Oiler.IO.make_vels_from_gnss_and_blocks(cas_vel_df, ant_df;
-                                                           fix="na",
+                                                           fix="1111",
                                                            ve=:e_vel,
                                                            vn=:n_vel,
                                                            ee=:e_err,
@@ -248,7 +277,8 @@ block_df = vcat(block_df, ant_df)
 
 gnss_vels = vcat(com_vels, 
                  cea_vels, 
-                 tib_vels, 
+                 tib_vels,
+                 gar_vels,
                  cas_vels,
                  ant_vels
                  )
@@ -392,7 +422,6 @@ alu_tris = Oiler.Utils.tri_priors_from_pole(alu_tris, pac_na_pole,
                                               err_coeff=10000.)
 
 
-
 function set_tri_rates(tri; ds=20., de=10000., ss=0., se=10000.)
     tri = @set tri.dip_slip_rate = ds
     tri = @set tri.dip_slip_err = de
@@ -404,6 +433,17 @@ end
 @info "mak tris"
 mak_tris = map(set_tri_rates, mak_tris)
 
+@info "ant tris"
+ant_tris = Oiler.IO.tris_from_geojson(JSON.parsefile(ant_tris_file))
+ant_tris = map(x->set_tri_rates(x; ds=5.), ant_tris)
+
+@info "cam tris"
+cam_tris = Oiler.IO.tris_from_geojson(JSON.parsefile(cam_tris_file))
+cam_tris = map(set_tri_rates, cam_tris)
+
+@info "sam tris"
+sam_tris = Oiler.IO.tris_from_geojson(JSON.parsefile(sam_tris_file))
+sam_tris = map(set_tri_rates, sam_tris)
 
 tris = vcat(cas_tris, 
             mak_tris, 
@@ -412,9 +452,12 @@ tris = vcat(cas_tris,
             #kjp_tris,
             izu_tris,
             #ryu_tris,
+            ant_tris,
+            cam_tris,
+            sam_tris
            )
 
-
+println("n tris: ", length(tris) )
 
 vels = vcat(fault_vels, 
             gnss_vels, 
@@ -425,7 +468,7 @@ vels = vcat(fault_vels,
 
 vel_groups = Oiler.group_vels_by_fix_mov(vels)
 
-tri_distance_weight = 10.
+tri_distance_weight = 5.
 
 @info "Solving"
 @time results = Oiler.solve_block_invs_from_vel_groups(vel_groups,
@@ -437,7 +480,7 @@ tri_distance_weight = 10.
             regularize_tris=true,
             tri_priors=true,
             predict_vels=true,
-            pred_se=true,
+            pred_se=false,
             check_closures=false,
             constraint_method="kkt_sym",
             check_nans=true,
@@ -459,7 +502,7 @@ if save_results == true
                                        "../results/global_faults_no_errs.geojson",
                                        name="global fault results")
     Oiler.IO.write_gnss_vel_results_to_csv(results, vel_groups;
-                                       name="global gnss results")
+                                       name="../results/global_gnss_results.csv")
 end
 
 Oiler.WebViewer.write_web_viewer(results=results, block_df=block_df,
