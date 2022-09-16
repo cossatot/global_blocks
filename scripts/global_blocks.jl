@@ -12,7 +12,7 @@ using PyPlot
 
 # options
 geol_slip_rate_weight = 2.
-save_results = true
+save_results = false
 
 
 # load data
@@ -68,13 +68,16 @@ ant_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_
 cam_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/cam_slab2_fine.geojson"
 garnier_vels_file = "/home/itchy/research/geodesy/global_block_comps/cca_blocks/geod_data/garnier_et_al_2022_vels_igs08.geojson"
 
-
 # JPN
 jpn_block_file = "/home/itchy/research/geodesy/global_block_comps/japan_blocks/block_data/japan_blocks.geojson"
 jpn_fault_file = "/home/itchy/research/geodesy/global_block_comps/japan_blocks/block_data/japan_faults.geojson"
 izu_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/izu_slab2.geojson"
 ryu_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/ryu_slab2.geojson"
 kjp_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/kur_jpn_slab2.geojson"
+
+# PHL
+phl_block_file = "/home/itchy/research/geodesy/global_block_comps/phil_blocks/block_data/phl_blocks.geojson"
+phl_fault_file = "/home/itchy/research/geodesy/global_block_comps/phil_blocks/block_data/phl_faults.geojson"
 
 # OCN
 ocn_block_file = "/home/itchy/research/geodesy/global_block_comps/oceania_blocks/block_data/oceania_blocks.geojson"
@@ -98,7 +101,7 @@ glo_slip_rates_file = "/home/itchy/research/geodesy/global_block_comps/global_sc
 # Geod
 c_asia_gsrm_vels_file = "/home/itchy/research/gem/c_asia/c_asia_blocks/gnss_data/gsrm_c_asia_vels.geojson"
 comet_gnss_vels_file = "/home/itchy/research/gem/c_asia/c_asia_blocks/gnss_data/comet_c_asia_gnss_vels.geojson"
-tibet_vel_field_file = "/home/itchy/research/gem/fault_data/china/geod/tibet_vel_field.geojson"
+tibet_vel_field_file = "/home/itchy/research/gem/fault_data/china/geod/tibet_vel_field_2021_12_06.geojson"
 gsrm_midas_ak_vels_file = "/home/itchy/research/cascadia/cascadia_blocks/data/vels_consolidated.geojson"
 
 # kur test bounds
@@ -115,7 +118,8 @@ cca_blocks = Oiler.IO.gis_vec_file_to_df(cca_block_file)
 sam_blocks = Oiler.IO.gis_vec_file_to_df(sam_block_file)
 sus_blocks = Oiler.IO.gis_vec_file_to_df(sus_block_file)
 jpn_blocks = Oiler.IO.gis_vec_file_to_df(jpn_block_file)
-ocn_blocks = Oiler.IO.gis_vec_file_to_df(ocn_block_file, fid_drop=["ocn010"])
+ocn_blocks = Oiler.IO.gis_vec_file_to_df(ocn_block_file)
+phl_blocks = Oiler.IO.gis_vec_file_to_df(phl_block_file)
 glo_blocks = Oiler.IO.gis_vec_file_to_df(glo_block_file)
 
 block_df = vcat(cea_blocks, 
@@ -126,10 +130,14 @@ block_df = vcat(cea_blocks,
                 sus_blocks,
                 sam_blocks,
                 cca_blocks,
-                #jpn_blocks,
+                jpn_blocks,
                 ocn_blocks,
+                phl_blocks,
                 glo_blocks; 
                 cols=:union)
+
+
+block_df[!, :fid] = string.(block_df[!, :fid])
 
 println("n blocks: ", size(block_df, 1))
 
@@ -142,107 +150,6 @@ block_df = filter(row -> !(row.fid == "ant"), block_df)
 #block_df = Oiler.IO.get_blocks_in_bounds!(block_df, bound_df; epsg=102016)
 #println("n blocks: ", size(block_df, 1))
 
-@info "doing faults"
-asia_fault_df, asia_faults, asia_fault_vels = Oiler.IO.process_faults_from_gis_files(
-                                        cea_fault_file,
-                                        chn_fault_file,
-                                        ana_fault_file,
-                                        nea_fault_file,
-                                        sam_fault_file,
-                                        cca_fault_file,
-                                        glo_fault_file,
-                                        ocn_fault_file,
-                                        block_df=block_df,
-                                        subset_in_bounds=true)
-
-
-# need to have large uncertaintes for Japan
-jpn_fault_df, jpn_faults, jpn_fault_vels = Oiler.IO.process_faults_from_gis_files(
-                                        jpn_fault_file,
-                                        block_df=block_df,
-                                        usd_default=1.,
-                                        lsd_default=4.,
-                                        e_default=1e5,
-                                        )
-
-
-nam_fault_df, nam_faults, nam_fault_vels = Oiler.IO.process_faults_from_gis_files(
-                                        cas_fault_file,
-                                        sus_fault_file;
-                                        block_df=block_df,
-                                        usd=:upper_seis_depth,
-                                        lsd=:lower_seis_depth,
-                                        subset_in_bounds=true)
-rename!(nam_fault_df, :upper_seis_depth => :usd)
-rename!(nam_fault_df, :lower_seis_depth => :lsd)
-
-fault_df = vcat(asia_fault_df,
-                nam_fault_df, 
-                #jpn_fault_df, 
-                cols=:union)
-faults = vcat(asia_faults, 
-              nam_faults, 
-              #jpn_faults,
-              )
-
-# not sure if I need this
-#jdf_ridge_vels = filter( x -> x.mov == "c006", nam_fault_vels)
-#nam_fault_vels = filter( x -> x.mov != "c006", nam_fault_vels)
-
-fault_vels = vcat(#[jdf_ridge_vels[1]], 
-                  nam_fault_vels, 
-                  asia_fault_vels,
-                  #jpn_fault_vels,
-                  )
-
-println("n faults: ", length(faults))
-println("n fault vels: ", length(fault_vels))
-
-
-@info "doing geol slip rates"
-cea_slip_rate_df = Oiler.IO.gis_vec_file_to_df(cea_slip_rate_file)
-chn_slip_rate_df = Oiler.IO.gis_vec_file_to_df(chn_slip_rate_file)
-nea_slip_rate_df = Oiler.IO.gis_vec_file_to_df(nea_slip_rate_file)
-cca_slip_rate_df = Oiler.IO.gis_vec_file_to_df(cca_slip_rates_file)
-ocn_slip_rate_df = Oiler.IO.gis_vec_file_to_df(ocn_slip_rates_file)
-glo_slip_rate_df = Oiler.IO.gis_vec_file_to_df(glo_slip_rates_file)
-
-asia_slip_rate_df = vcat(cea_slip_rate_df, 
-                         chn_slip_rate_df, 
-                         nea_slip_rate_df,
-                         cca_slip_rate_df,
-                         ocn_slip_rate_df,
-                         glo_slip_rate_df,
-                         )
-asia_slip_rate_df, asia_slip_rate_vels = Oiler.IO.make_geol_slip_rate_vels!(
-                                            asia_slip_rate_df, fault_df)
-
-cas_geol_slip_rate_df = Oiler.IO.gis_vec_file_to_df(cascadia_geol_slip_rates_file)
-sus_geol_slip_rate_df = Oiler.IO.gis_vec_file_to_df(sus_geol_rates_file)
-cal_geol_slip_rate_df = Oiler.IO.gis_vec_file_to_df(cali_geol_slip_rates_file)
-
-
-nam_geol_slip_rate_df = vcat(cas_geol_slip_rate_df, sus_geol_slip_rate_df, cal_geol_slip_rate_df)
-nam_geol_slip_rate_df, nam_geol_slip_rate_vels = Oiler.IO.make_geol_slip_rate_vels!(
-                                                        nam_geol_slip_rate_df, 
-                                                        fault_df;
-                                                        weight=geol_slip_rate_weight,
-                                                        #usd="upper_seis_depth",
-                                                        #lsd="lower_seis_depth",
-                                                        )
-
-geol_slip_rate_df = vcat(asia_slip_rate_df, 
-                         nam_geol_slip_rate_df, 
-                         cols=:union)
-geol_slip_rate_vels = vcat(asia_slip_rate_vels, 
-                           nam_geol_slip_rate_vels)
-
-
-println("n geol slip rates: ", length(geol_slip_rate_vels))
-
-
-
-
 @info "doing GNSS"
 cea_vel_df = Oiler.IO.gis_vec_file_to_df(c_asia_gsrm_vels_file)
 com_vel_df = Oiler.IO.gis_vec_file_to_df(comet_gnss_vels_file)
@@ -251,7 +158,7 @@ cas_vel_df = Oiler.IO.gis_vec_file_to_df(gsrm_midas_ak_vels_file)
 gar_vel_df = Oiler.IO.gis_vec_file_to_df(garnier_vels_file)
 mora_vel_df = Oiler.IO.gis_vec_file_to_df(mora_vels_file)
 
-tib_vel_df[!,"station"] = string.(tib_vel_df[!,:id])
+tib_vel_df[!,"station"] = string.(tib_vel_df[!,:fid])
 
 
 @info " doing comet gnss vels"
@@ -313,6 +220,126 @@ gnss_vels = vcat(com_vels,
                  )
 
 println("n gnss vels: ", length(gnss_vels))
+@info "doing faults"
+asia_fault_df, asia_faults, asia_fault_vels = Oiler.IO.process_faults_from_gis_files(
+                                        cea_fault_file,
+                                        chn_fault_file,
+                                        ana_fault_file,
+                                        nea_fault_file,
+                                        sam_fault_file,
+                                        cca_fault_file,
+                                        glo_fault_file,
+                                        ocn_fault_file,
+                                        phl_fault_file,
+                                        block_df=block_df,
+                                        subset_in_bounds=true,
+                                        check_blocks=false)
+
+
+# need to have large uncertaintes for Japan
+jpn_fault_df, jpn_faults, jpn_fault_vels = Oiler.IO.process_faults_from_gis_files(
+                                        jpn_fault_file,
+                                        block_df=block_df,
+                                        usd_default=1.,
+                                        lsd_default=5.,
+                                        e_default=10.,
+                                        check_blocks=false,
+                                        )
+
+
+nam_fault_df, nam_faults, nam_fault_vels = Oiler.IO.process_faults_from_gis_files(
+                                        cas_fault_file,
+                                        sus_fault_file;
+                                        block_df=block_df,
+                                        usd=:upper_seis_depth,
+                                        lsd=:lower_seis_depth,
+                                        subset_in_bounds=true,
+                                        check_blocks=false,
+                                        )
+rename!(nam_fault_df, :upper_seis_depth => :usd)
+rename!(nam_fault_df, :lower_seis_depth => :lsd)
+
+fault_df = vcat(asia_fault_df,
+                nam_fault_df, 
+                jpn_fault_df, 
+                cols=:union)
+faults = vcat(asia_faults, 
+              nam_faults, 
+              jpn_faults,
+              )
+
+# not sure if I need this
+#jdf_ridge_vels = filter( x -> x.mov == "c006", nam_fault_vels)
+#nam_fault_vels = filter( x -> x.mov != "c006", nam_fault_vels)
+
+fault_vels = vcat(#[jdf_ridge_vels[1]], 
+                  nam_fault_vels, 
+                  asia_fault_vels,
+                  jpn_fault_vels,
+                  )
+
+println("n faults: ", length(faults))
+println("n fault vels: ", length(fault_vels))
+
+
+@info "checking fault hw and fw"
+ffs = Oiler.Utils.check_hw_fw_all(faults, block_df; verbose=true)
+
+println("n faults left: ", length(ffs))
+
+
+@info "doing non-fault block boundaries"
+@time non_fault_bounds = Oiler.IO.get_non_fault_block_bounds(block_df, faults, verbose=true)
+bound_vels = vcat(map(Oiler.Boundaries.boundary_to_vels, non_fault_bounds)...)
+println("n non-fault-bound vels: ", length(bound_vels))
+
+
+
+@info "doing geol slip rates"
+cea_slip_rate_df = Oiler.IO.gis_vec_file_to_df(cea_slip_rate_file)
+chn_slip_rate_df = Oiler.IO.gis_vec_file_to_df(chn_slip_rate_file)
+nea_slip_rate_df = Oiler.IO.gis_vec_file_to_df(nea_slip_rate_file)
+cca_slip_rate_df = Oiler.IO.gis_vec_file_to_df(cca_slip_rates_file)
+ocn_slip_rate_df = Oiler.IO.gis_vec_file_to_df(ocn_slip_rates_file)
+glo_slip_rate_df = Oiler.IO.gis_vec_file_to_df(glo_slip_rates_file)
+
+asia_slip_rate_df = vcat(cea_slip_rate_df, 
+                         chn_slip_rate_df, 
+                         nea_slip_rate_df,
+                         cca_slip_rate_df,
+                         ocn_slip_rate_df,
+                         glo_slip_rate_df,
+                         )
+asia_slip_rate_df, asia_slip_rate_vels = Oiler.IO.make_geol_slip_rate_vels!(
+                                            asia_slip_rate_df, fault_df)
+
+cas_geol_slip_rate_df = Oiler.IO.gis_vec_file_to_df(cascadia_geol_slip_rates_file)
+sus_geol_slip_rate_df = Oiler.IO.gis_vec_file_to_df(sus_geol_rates_file)
+cal_geol_slip_rate_df = Oiler.IO.gis_vec_file_to_df(cali_geol_slip_rates_file)
+
+
+nam_geol_slip_rate_df = vcat(cas_geol_slip_rate_df, sus_geol_slip_rate_df, cal_geol_slip_rate_df)
+nam_geol_slip_rate_df, nam_geol_slip_rate_vels = Oiler.IO.make_geol_slip_rate_vels!(
+                                                        nam_geol_slip_rate_df, 
+                                                        fault_df;
+                                                        weight=geol_slip_rate_weight,
+                                                        #usd="upper_seis_depth",
+                                                        #lsd="lower_seis_depth",
+                                                        )
+
+geol_slip_rate_df = vcat(asia_slip_rate_df, 
+                         nam_geol_slip_rate_df, 
+                         cols=:union)
+geol_slip_rate_vels = vcat(asia_slip_rate_vels, 
+                           nam_geol_slip_rate_vels)
+
+
+println("n geol slip rates: ", length(geol_slip_rate_vels))
+
+
+
+
+
 
 @info "doing Explorer and JdF plates"
 
@@ -494,9 +521,9 @@ tris = vcat(cas_tris,
             mak_tris, 
             alu_tris, 
             kur_tris,
-            #kjp_tris,
+            kjp_tris,
             izu_tris,
-            #ryu_tris,
+            ryu_tris,
             ant_tris,
             cam_tris,
             sam_tris,
@@ -514,6 +541,7 @@ vels = vcat(fault_vels,
             geol_slip_rate_vels, 
             jdf_vels, 
             exp_vels,
+            bound_vels,
            )
 
 vel_groups = Oiler.group_vels_by_fix_mov(vels)
@@ -550,7 +578,8 @@ if save_results == true
                                      name="global tri results")
     Oiler.IO.write_fault_results_to_gj(results,
                                        "../results/global_faults_no_errs.geojson",
-                                       name="global fault results")
+                                       name="global fault results",
+                                       calc_rake=true, calc_slip_rate=true)
     Oiler.IO.write_gnss_vel_results_to_csv(results, vel_groups;
                                        name="../results/global_gnss_results.csv")
 end
