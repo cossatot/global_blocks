@@ -12,7 +12,8 @@ using PyPlot
 
 # options
 geol_slip_rate_weight = 2.
-save_results = false
+save_results = true
+pred_se = false
 
 
 # load data
@@ -241,8 +242,8 @@ jpn_fault_df, jpn_faults, jpn_fault_vels = Oiler.IO.process_faults_from_gis_file
                                         jpn_fault_file,
                                         block_df=block_df,
                                         usd_default=1.,
-                                        lsd_default=5.,
-                                        e_default=10.,
+                                        lsd_default=10.,
+                                        e_default=1.,
                                         check_blocks=false,
                                         )
 
@@ -290,7 +291,7 @@ println("n faults left: ", length(ffs))
 
 @info "doing non-fault block boundaries"
 @time non_fault_bounds = Oiler.IO.get_non_fault_block_bounds(block_df, faults, verbose=true)
-bound_vels = vcat(map(Oiler.Boundaries.boundary_to_vels, non_fault_bounds)...)
+bound_vels = vcat(map(x->Oiler.Boundaries.boundary_to_vels(x, ee=3.0, en=3.0), non_fault_bounds)...)
 println("n non-fault-bound vels: ", length(bound_vels))
 
 
@@ -558,7 +559,8 @@ tri_distance_weight = 5.
             regularize_tris=true,
             tri_priors=true,
             predict_vels=true,
-            pred_se=true,
+            pred_se=pred_se,
+            se_iters=200,
             check_closures=false,
             constraint_method="kkt_sym",
             check_nans=true,
@@ -576,10 +578,18 @@ if save_results == true
     Oiler.IO.write_tri_results_to_gj(tris, results,
                                      "../results/all_tris_no_errs.geojson",
                                      name="global tri results")
-    Oiler.IO.write_fault_results_to_gj(results,
+    
+    if pred_se
+        Oiler.IO.write_fault_results_to_gj(results,
+                                       "../results/global_faults.geojson",
+                                       name="global fault results",
+                                       calc_rake=true, calc_slip_rate=true)
+    else
+        Oiler.IO.write_fault_results_to_gj(results,
                                        "../results/global_faults_no_errs.geojson",
                                        name="global fault results",
                                        calc_rake=true, calc_slip_rate=true)
+    end
     Oiler.IO.write_gnss_vel_results_to_csv(results, vel_groups;
                                        name="../results/global_gnss_results.csv")
 end
