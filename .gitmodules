@@ -1,0 +1,42 @@
+[submodule "anatolia_blocks"]
+	path = anatolia_blocks
+	url = git@gitlab.com:cossatot/anatolia_blocks.git
+[submodule "cascadia_blocks"]
+	path = cascadia_blocks
+	url = git@github.com:cossatot/cascadia_blocks.git
+[submodule "c_asia_blocks"]
+	path = c_asia_blocks
+	url = git@github.com:cossatot/c_asia_blocks.git
+[submodule "cca_blocks"]
+	path = cca_blocks
+	url = git@github.com:cossatot/cca_blocks.git
+[submodule "china_active_faults"]
+	path = china_active_faults
+	url = git@github.com:cossatot/china_active_faults.git
+[submodule "ears_blocks"]
+	path = ears_blocks
+	url = git@github.com:cossatot/ears_blocks.git
+[submodule "global_scale_plates"]
+	path = global_scale_plates
+	url = git@gitlab.com:cossatot/global_scale_plates.git
+[submodule "japan_blocks"]
+	path = japan_blocks
+	url = git@gitlab.com:cossatot/japan_blocks.git
+[submodule "ne_asia_blocks"]
+	path = ne_asia_blocks
+	url = git@gitlab.com:cossatot/ne_asia_blocks.git
+[submodule "oceania_blocks"]
+	path = oceania_blocks
+	url = git@github.com:cossatot/oceania_blocks.git
+[submodule "phil_blocks"]
+	path = phil_blocks
+	url = git@github.com:cossatot/phil_blocks.git
+[submodule "s_us_faults"]
+	path = s_us_faults
+	url = git@github.com:cossatot/s_us_faults.git
+[submodule "sam_blocks"]
+	path = sam_blocks
+	url = git@github.com:cossatot/sam_blocks.git
+[submodule "subduction"]
+	path = subduction
+	url = git@gitlab.com:cossatot/subduction.git
