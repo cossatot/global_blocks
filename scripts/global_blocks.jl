@@ -18,15 +18,15 @@ pred_se = false
 
 # load data
 # CEA
-cea_fault_file = "/home/itchy/research/gem/c_asia/c_asia_blocks/block_data/c_asia_faults.geojson"
-cea_block_file = "/home/itchy/research/gem/c_asia/c_asia_blocks/block_data/c_asia_blocks.geojson"
-cea_slip_rate_file = "/home/itchy/research/gem/c_asia/c_asia_blocks/block_data/c_asia_geol_slip_rates.geojson"
-cea_tris_file = "/home/itchy/research/gem/c_asia/c_asia_blocks/block_data/c_asia_sub_tris.geojson"
+cea_fault_file = "/home/itchy/research/geodesy/global_block_comps/c_asia_blocks/block_data/c_asia_faults.geojson"
+cea_block_file = "/home/itchy/research/geodesy/global_block_comps/c_asia_blocks/block_data/c_asia_blocks.geojson"
+cea_slip_rate_file = "/home/itchy/research/geodesy/global_block_comps/c_asia_blocks/block_data/c_asia_geol_slip_rates.geojson"
+cea_tris_file = "/home/itchy/research/geodesy/global_block_comps/c_asia_blocks/block_data/c_asia_sub_tris.geojson"
 
 # CHN
-chn_block_file = "/home/itchy/research/gem/fault_data/china/block_data/chn_blocks.geojson"
-chn_fault_file = "/home/itchy/research/gem/fault_data/china/block_data/chn_faults.geojson"
-chn_slip_rate_file = "/home/itchy/research/gem/fault_data/china/block_data/geol_slip_rate_pts.geojson"
+chn_block_file = "/home/itchy/research/geodesy/global_block_comps/china/block_data/chn_blocks.geojson"
+chn_fault_file = "/home/itchy/research/geodesy/global_block_comps/china/block_data/chn_faults.geojson"
+chn_slip_rate_file = "/home/itchy/research/geodesy/global_block_comps/china/block_data/geol_slip_rate_pts.geojson"
 
 # ANA
 ana_block_file = "/home/itchy/research/geodesy/global_block_comps/anatolia/block_data/anatolia_blocks.geojson"
@@ -39,21 +39,21 @@ nea_slip_rate_file = "/home/itchy/research/geodesy/global_block_comps/ne_asia_bl
 kur_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/kur_tris_slab2.geojson"
 
 # CAS
-cas_block_file = "/home/itchy/research/cascadia/cascadia_blocks/data/cascadia_blocks.geojson"
-cas_fault_file = "/home/itchy/research/cascadia/cascadia_blocks/data/cascadia_block_faults.geojson"
-cascadia_geol_slip_rates_file = "/home/itchy/research/cascadia/cascadia_blocks/data/cascadia_geol_slip_rate_pts.geojson"
+cas_block_file = "/home/itchy/research/geodesy/global_block_comps/cascadia_blocks/data/cascadia_blocks.geojson"
+cas_fault_file = "/home/itchy/research/geodesy/global_block_comps/cascadia_blocks/data/cascadia_block_faults.geojson"
+cascadia_geol_slip_rates_file = "/home/itchy/research/geodesy/global_block_comps/cascadia_blocks/data/cascadia_geol_slip_rate_pts.geojson"
 #cascadia_tris_file = "/home/itchy/research/cascadia/cascadia_blocks/data/graham_cascadia_subduction_tris.geojson"
-cascadia_tris_file = "/home/itchy/research/cascadia/cascadia_blocks/data/jdf_explorer_interface.geojson"
+cascadia_tris_file = "/home/itchy/research/geodesy/global_block_comps/cascadia_blocks/data/jdf_explorer_interface.geojson"
 aleut_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/alu_tris_slab2.geojson"
 #aleut_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/alu_tris.geojson"
-jdf_point_file = "/home/itchy/research/cascadia/cascadia_blocks/data/jdf_vel_pts.csv"
-exp_point_file = "/home/itchy/research/cascadia/cascadia_blocks/data/explorer_vel_pts.csv"
+jdf_point_file = "/home/itchy/research/geodesy/global_block_comps/cascadia_blocks/data/jdf_vel_pts.csv"
+exp_point_file = "/home/itchy/research/geodesy/global_block_comps/cascadia_blocks/data/explorer_vel_pts.csv"
 
 # SUS
-sus_block_file = "/home/itchy/research/us_faults/s_us_faults/s_us_blocks.geojson"
-sus_fault_file = "/home/itchy/research/us_faults/s_us_faults/s_us_faults.geojson"
-sus_geol_rates_file = "/home/itchy/research/us_faults/s_us_faults/new_us_faults_geol_slip_rates.geojson"
-cali_geol_slip_rates_file = "../../../us_faults/s_us_faults/ca_geol_slip_rates.geojson"
+sus_block_file = "/home/itchy/research/geodesy/global_block_comps/s_us_faults/s_us_blocks.geojson"
+sus_fault_file = "/home/itchy/research/geodesy/global_block_comps/s_us_faults/s_us_faults.geojson"
+sus_geol_rates_file = "/home/itchy/research/geodesy/global_block_comps/s_us_faults/new_us_faults_geol_slip_rates.geojson"
+cali_geol_slip_rates_file = "/home/itchy/research/geodesy/global_block_comps/s_us_faults/ca_geol_slip_rates.geojson"
 
 # SAM
 sam_block_file ="/home/itchy/research/geodesy/global_block_comps/sam_blocks/block_data/sam_blocks.geojson"
@@ -100,10 +100,11 @@ glo_fault_file = "/home/itchy/research/geodesy/global_block_comps/global_scale_p
 glo_slip_rates_file = "/home/itchy/research/geodesy/global_block_comps/global_scale_plates/global_scale_slip_rates.geojson"
 
 # Geod
-c_asia_gsrm_vels_file = "/home/itchy/research/gem/c_asia/c_asia_blocks/gnss_data/gsrm_c_asia_vels.geojson"
-comet_gnss_vels_file = "/home/itchy/research/gem/c_asia/c_asia_blocks/gnss_data/comet_c_asia_gnss_vels.geojson"
-tibet_vel_field_file = "/home/itchy/research/gem/fault_data/china/geod/tibet_vel_field_2021_12_06.geojson"
-gsrm_midas_ak_vels_file = "/home/itchy/research/cascadia/cascadia_blocks/data/vels_consolidated.geojson"
+c_asia_gsrm_vels_file = "/home/itchy/research/geodesy/global_block_comps/c_asia_blocks/gnss_data/gsrm_c_asia_vels.geojson"
+comet_gnss_vels_file = "/home/itchy/research/geodesy/global_block_comps/c_asia_blocks/gnss_data/comet_c_asia_gnss_vels.geojson"
+tibet_vel_field_file = "/home/itchy/research/geodesy/global_block_comps/china/geod/tibet_vel_field_2021_12_06.geojson"
+gsrm_midas_ak_vels_file = "/home/itchy/research/geodesy/global_block_comps/cascadia_blocks/data/vels_consolidated.geojson"
+weiss_vel_field_file = "/home/itchy/research/geodesy/global_block_comps/anatolia/geod_data/weiss_et_al_2020_vels_down_100.geojson"
 
 # kur test bounds
 kur_test_bounds_file = "../block_data/kur_test_bounds.geojson"
@@ -158,8 +159,11 @@ tib_vel_df = Oiler.IO.gis_vec_file_to_df(tibet_vel_field_file)
 cas_vel_df = Oiler.IO.gis_vec_file_to_df(gsrm_midas_ak_vels_file)
 gar_vel_df = Oiler.IO.gis_vec_file_to_df(garnier_vels_file)
 mora_vel_df = Oiler.IO.gis_vec_file_to_df(mora_vels_file)
+weiss_vel_field_df = Oiler.IO.gis_vec_file_to_df(weiss_vel_field_file)
 
 tib_vel_df[!,"station"] = string.(tib_vel_df[!,:fid])
+weiss_vel_field_df[!,"station"] = map(x->join(["weiss_", x]), 
+                                      string.(weiss_vel_field_df[!,:fid]))
 
 
 @info " doing comet gnss vels"
@@ -177,6 +181,13 @@ tib_vel_df[!,"station"] = string.(tib_vel_df[!,:fid])
 @info " doing comet insar vels"
 @time tib_vels = Oiler.IO.make_vels_from_gnss_and_blocks(tib_vel_df, block_df;
     fix="1111", epsg=102016)
+
+@info " doing weiss insar vels"
+@time wss_vels = Oiler.IO.make_vels_from_gnss_and_blocks(
+    weiss_vel_field_df, block_df;
+    ve=:e_vel, vn=:n_vel, ee=:e_err, en=:n_err, name=:station,
+    fix="1111"
+)
 
 @info " doing Garnier vels"
 @time gar_vels = Oiler.IO.make_vels_from_gnss_and_blocks(gar_vel_df, block_df;
@@ -217,7 +228,8 @@ gnss_vels = vcat(com_vels,
                  tib_vels,
                  gar_vels,
                  cas_vels,
-                 ant_vels
+                 ant_vels,
+                 wss_vels,
                  )
 
 println("n gnss vels: ", length(gnss_vels))
