@@ -80,6 +80,14 @@ kjp_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_
 phl_block_file = "/home/itchy/research/geodesy/global_block_comps/phil_blocks/block_data/phl_blocks.geojson"
 phl_fault_file = "/home/itchy/research/geodesy/global_block_comps/phil_blocks/block_data/phl_faults.geojson"
 
+# EUR
+eur_block_file = "/home/itchy/research/geodesy/global_block_comps/eur_blocks/block_data/eur_blocks.geojson"
+eur_fault_file = "/home/itchy/research/geodesy/global_block_comps/eur_blocks/block_data/eur_faults.geojson"
+
+# EAR
+ear_block_file = "/home/itchy/research/geodesy/global_block_comps/ears/block_data/ears_blocks.geojson"
+ear_fault_file = "/home/itchy/research/geodesy/global_block_comps/ears/block_data/ears_faults.geojson"
+
 # OCN
 ocn_block_file = "/home/itchy/research/geodesy/global_block_comps/oceania_blocks/block_data/oceania_blocks.geojson"
 ocn_fault_file = "/home/itchy/research/geodesy/global_block_comps/oceania_blocks/block_data/oceania_faults.geojson"
@@ -105,6 +113,9 @@ comet_gnss_vels_file = "/home/itchy/research/geodesy/global_block_comps/c_asia_b
 tibet_vel_field_file = "/home/itchy/research/geodesy/global_block_comps/china/geod/tibet_vel_field_2021_12_06.geojson"
 gsrm_midas_ak_vels_file = "/home/itchy/research/geodesy/global_block_comps/cascadia_blocks/data/vels_consolidated.geojson"
 weiss_vel_field_file = "/home/itchy/research/geodesy/global_block_comps/anatolia/geod_data/weiss_et_al_2020_vels_down_100.geojson"
+daug_vel_file  = "/home/itchy/research/geodesy/global_block_comps/eur_blocks/strain_data/daugostino_vels.geojson"
+ana_vel_file = "/home/itchy/research/geodesy/global_block_comps/anatolia/geod_data/anatolia_gnss_rollins.geojson"
+
 
 # kur test bounds
 kur_test_bounds_file = "../block_data/kur_test_bounds.geojson"
@@ -122,6 +133,8 @@ sus_blocks = Oiler.IO.gis_vec_file_to_df(sus_block_file)
 jpn_blocks = Oiler.IO.gis_vec_file_to_df(jpn_block_file)
 ocn_blocks = Oiler.IO.gis_vec_file_to_df(ocn_block_file)
 phl_blocks = Oiler.IO.gis_vec_file_to_df(phl_block_file)
+eur_blocks = Oiler.IO.gis_vec_file_to_df(eur_block_file)
+ear_blocks = Oiler.IO.gis_vec_file_to_df(ear_block_file)
 glo_blocks = Oiler.IO.gis_vec_file_to_df(glo_block_file)
 
 block_df = vcat(cea_blocks, 
@@ -135,6 +148,8 @@ block_df = vcat(cea_blocks,
                 jpn_blocks,
                 ocn_blocks,
                 phl_blocks,
+                eur_blocks,
+                ear_blocks,
                 glo_blocks; 
                 cols=:union)
 
@@ -160,6 +175,8 @@ cas_vel_df = Oiler.IO.gis_vec_file_to_df(gsrm_midas_ak_vels_file)
 gar_vel_df = Oiler.IO.gis_vec_file_to_df(garnier_vels_file)
 mora_vel_df = Oiler.IO.gis_vec_file_to_df(mora_vels_file)
 weiss_vel_field_df = Oiler.IO.gis_vec_file_to_df(weiss_vel_field_file)
+daug_vel_df = Oiler.IO.gis_vec_file_to_df(daug_vel_file)
+ana_vel_df = Oiler.IO.gis_vec_file_to_df(ana_vel_file)
 
 tib_vel_df[!,"station"] = string.(tib_vel_df[!,:fid])
 weiss_vel_field_df[!,"station"] = map(x->join(["weiss_", x]), 
@@ -174,6 +191,18 @@ weiss_vel_field_df[!,"station"] = map(x->join(["weiss_", x]),
 
 @info " doing Asia gsrm vels"
 @time cea_vels = Oiler.IO.make_vels_from_gnss_and_blocks(cea_vel_df, block_df;
+    ve=:e_vel, vn=:n_vel, ee=:e_err, en=:n_err, name=:station,
+    fix="1111", epsg=102016,
+)
+
+@info " doing Anatolia vels"
+@time ana_vels = Oiler.IO.make_vels_from_gnss_and_blocks(ana_vel_df, block_df;
+    ve=:e_vel, vn=:n_vel, ee=:e_err, en=:n_err, name=:station,
+    fix="1111", epsg=102016,
+)
+
+@info " doing D'Augostino vels"
+@time dog_vels = Oiler.IO.make_vels_from_gnss_and_blocks(daug_vel_df, block_df;
     ve=:e_vel, vn=:n_vel, ee=:e_err, en=:n_err, name=:station,
     fix="1111", epsg=102016,
 )
@@ -212,7 +241,7 @@ weiss_vel_field_df[!,"station"] = map(x->join(["weiss_", x]),
 
 @info " doing NAM-rel vels (Antarctica)"
 @time ant_vels = Oiler.IO.make_vels_from_gnss_and_blocks(cas_vel_df, ant_df;
-                                                           fix="1111",
+                                                           fix="na",
                                                            ve=:e_vel,
                                                            vn=:n_vel,
                                                            ee=:e_err,
@@ -224,7 +253,9 @@ weiss_vel_field_df[!,"station"] = map(x->join(["weiss_", x]),
 block_df = vcat(block_df, ant_df)
 
 gnss_vels = vcat(com_vels, 
-                 cea_vels, 
+                 cea_vels,
+                 ana_vels,
+                 dog_vels,
                  tib_vels,
                  gar_vels,
                  cas_vels,
@@ -244,6 +275,8 @@ asia_fault_df, asia_faults, asia_fault_vels = Oiler.IO.process_faults_from_gis_f
                                         glo_fault_file,
                                         ocn_fault_file,
                                         phl_fault_file,
+                                        eur_fault_file,
+                                        ear_fault_file,
                                         block_df=block_df,
                                         subset_in_bounds=true,
                                         check_blocks=false)
@@ -282,8 +315,9 @@ faults = vcat(asia_faults,
               )
 
 # not sure if I need this
-#jdf_ridge_vels = filter( x -> x.mov == "c006", nam_fault_vels)
-#nam_fault_vels = filter( x -> x.mov != "c006", nam_fault_vels)
+jdf_ridge_vels = filter( x -> x.mov == "c006", nam_fault_vels)
+nam_fault_vels = filter( x -> x.mov != "c006", nam_fault_vels)
+nam_fault_vels = filter( x -> x.mov != "c112", nam_fault_vels)
 
 fault_vels = vcat(#[jdf_ridge_vels[1]], 
                   nam_fault_vels, 
@@ -304,6 +338,14 @@ println("n faults left: ", length(ffs))
 @info "doing non-fault block boundaries"
 @time non_fault_bounds = Oiler.IO.get_non_fault_block_bounds(block_df, faults, verbose=true)
 bound_vels = vcat(map(x->Oiler.Boundaries.boundary_to_vels(x, ee=3.0, en=3.0), non_fault_bounds)...)
+
+bound_vels = filter(x->x.fix != "c006", bound_vels)
+bound_vels = filter(x->x.mov != "c006", bound_vels)
+bound_vels = filter(x->x.fix != "c112", bound_vels)
+bound_vels = filter(x->x.mov != "c112", bound_vels)
+
+
+
 println("n non-fault-bound vels: ", length(bound_vels))
 
 
@@ -610,12 +652,12 @@ Oiler.WebViewer.write_web_viewer(results=results, block_df=block_df,
                                  directory="../web_viewer", ref_pole="na")
 
 
-map_fig = Oiler.Plots.plot_results_map(results, vel_groups, faults, tris)
-rates_fig = Oiler.Plots.plot_slip_rate_fig(geol_slip_rate_df, 
-                                           geol_slip_rate_vels, 
-                                           fault_df, results)
-
-show()
-
-println("done!")
+#map_fig = Oiler.Plots.plot_results_map(results, vel_groups, faults, tris)
+#rates_fig = Oiler.Plots.plot_slip_rate_fig(geol_slip_rate_df, 
+#                                           geol_slip_rate_vels, 
+#                                           fault_df, results)
+#
+#show()
+#
+#println("done!")
 
