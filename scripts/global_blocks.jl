@@ -13,108 +13,114 @@ using PyPlot
 # options
 geol_slip_rate_weight = 2.
 save_results = true
-pred_se = false
+pred_se = true
 
 
 # load data
 # CEA
-cea_fault_file = "/home/itchy/research/geodesy/global_block_comps/c_asia_blocks/block_data/c_asia_faults.geojson"
-cea_block_file = "/home/itchy/research/geodesy/global_block_comps/c_asia_blocks/block_data/c_asia_blocks.geojson"
-cea_slip_rate_file = "/home/itchy/research/geodesy/global_block_comps/c_asia_blocks/block_data/c_asia_geol_slip_rates.geojson"
-cea_tris_file = "/home/itchy/research/geodesy/global_block_comps/c_asia_blocks/block_data/c_asia_sub_tris.geojson"
+cea_fault_file = "../c_asia_blocks/block_data/c_asia_faults.geojson"
+cea_block_file = "../c_asia_blocks/block_data/c_asia_blocks.geojson"
+cea_slip_rate_file = "../c_asia_blocks/block_data/c_asia_geol_slip_rates.geojson"
+cea_tris_file = "../c_asia_blocks/block_data/c_asia_sub_tris.geojson"
 
 # CHN
-chn_block_file = "/home/itchy/research/geodesy/global_block_comps/china/block_data/chn_blocks.geojson"
-chn_fault_file = "/home/itchy/research/geodesy/global_block_comps/china/block_data/chn_faults.geojson"
-chn_slip_rate_file = "/home/itchy/research/geodesy/global_block_comps/china/block_data/geol_slip_rate_pts.geojson"
+chn_block_file = "../china_active_faults/block_data/chn_blocks.geojson"
+chn_fault_file = "../china_active_faults/block_data/chn_faults.geojson"
+chn_slip_rate_file = "../china_active_faults/block_data/geol_slip_rate_pts.geojson"
 
 # ANA
-ana_block_file = "/home/itchy/research/geodesy/global_block_comps/anatolia/block_data/anatolia_blocks.geojson"
-ana_fault_file = "/home/itchy/research/geodesy/global_block_comps/anatolia/block_data/anatolia_faults.geojson"
+ana_block_file = "../anatolia_blocks/block_data/anatolia_blocks.geojson"
+ana_fault_file = "../anatolia_blocks/block_data/anatolia_faults.geojson"
+ana_slip_rates_file = "../anatolia_blocks/geod_data/anatolia_geol_slip_rates.geojson"
 
 # NEA
-nea_block_file = "/home/itchy/research/geodesy/global_block_comps/ne_asia_blocks/ne_asia_blocks.geojson"
-nea_fault_file = "/home/itchy/research/geodesy/global_block_comps/ne_asia_blocks/ne_asia_faults.geojson"
-nea_slip_rate_file = "/home/itchy/research/geodesy/global_block_comps/ne_asia_blocks/ne_asia_slip_rates.geojson"
-kur_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/kur_tris_slab2.geojson"
+nea_block_file = "../ne_asia_blocks/ne_asia_blocks.geojson"
+nea_fault_file = "../ne_asia_blocks/ne_asia_faults.geojson"
+nea_slip_rate_file = "../ne_asia_blocks/ne_asia_slip_rates.geojson"
+kur_tris_file = "../subduction/sub_tri_meshes/kur_tris_slab2.geojson"
 
 # CAS
-cas_block_file = "/home/itchy/research/geodesy/global_block_comps/cascadia_blocks/data/cascadia_blocks.geojson"
-cas_fault_file = "/home/itchy/research/geodesy/global_block_comps/cascadia_blocks/data/cascadia_block_faults.geojson"
-cascadia_geol_slip_rates_file = "/home/itchy/research/geodesy/global_block_comps/cascadia_blocks/data/cascadia_geol_slip_rate_pts.geojson"
+cas_block_file = "../cascadia_blocks/data/cascadia_blocks.geojson"
+cas_fault_file = "../cascadia_blocks/data/cascadia_block_faults.geojson"
+cascadia_geol_slip_rates_file = "../cascadia_blocks/data/cascadia_geol_slip_rate_pts.geojson"
 #cascadia_tris_file = "/home/itchy/research/cascadia/cascadia_blocks/data/graham_cascadia_subduction_tris.geojson"
-cascadia_tris_file = "/home/itchy/research/geodesy/global_block_comps/cascadia_blocks/data/jdf_explorer_interface.geojson"
-aleut_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/alu_tris_slab2.geojson"
-#aleut_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/alu_tris.geojson"
-jdf_point_file = "/home/itchy/research/geodesy/global_block_comps/cascadia_blocks/data/jdf_vel_pts.csv"
-exp_point_file = "/home/itchy/research/geodesy/global_block_comps/cascadia_blocks/data/explorer_vel_pts.csv"
+cascadia_tris_file = "../cascadia_blocks/data/jdf_explorer_interface.geojson"
+aleut_tris_file = "../subduction/sub_tri_meshes/alu_tris_slab2.geojson"
+#aleut_tris_file = "../subduction/sub_tri_meshes/alu_tris.geojson"
+jdf_point_file = "../cascadia_blocks/data/jdf_vel_pts.csv"
+exp_point_file = "../cascadia_blocks/data/explorer_vel_pts.csv"
 
 # SUS
-sus_block_file = "/home/itchy/research/geodesy/global_block_comps/s_us_faults/s_us_blocks.geojson"
-sus_fault_file = "/home/itchy/research/geodesy/global_block_comps/s_us_faults/s_us_faults.geojson"
-sus_geol_rates_file = "/home/itchy/research/geodesy/global_block_comps/s_us_faults/new_us_faults_geol_slip_rates.geojson"
-cali_geol_slip_rates_file = "/home/itchy/research/geodesy/global_block_comps/s_us_faults/ca_geol_slip_rates.geojson"
+sus_block_file = "../s_us_faults/s_us_blocks.geojson"
+sus_fault_file = "../s_us_faults/s_us_faults.geojson"
+sus_geol_rates_file = "../s_us_faults/new_us_faults_geol_slip_rates.geojson"
+cali_geol_slip_rates_file = "../s_us_faults/ca_geol_slip_rates.geojson"
 
 # SAM
-sam_block_file ="/home/itchy/research/geodesy/global_block_comps/sam_blocks/block_data/sam_blocks.geojson"
-sam_fault_file ="/home/itchy/research/geodesy/global_block_comps/sam_blocks/block_data/sam_faults.geojson"
-sam_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/sam_slab2_60.geojson"
-mora_vels_file = "/home/itchy/research/geodesy/global_block_comps/sam_blocks/block_data/mora_vels.geojson"
+sam_block_file ="../sam_blocks/block_data/sam_blocks.geojson"
+sam_fault_file ="../sam_blocks/block_data/sam_faults.geojson"
+sam_tris_file = "../subduction/sub_tri_meshes/sam_slab2_60.geojson"
+mora_vels_file = "../sam_blocks/block_data/mora_vels.geojson"
 
 # CCA
-cca_block_file = "/home/itchy/research/geodesy/global_block_comps/cca_blocks/block_data/cca_blocks.geojson"
-cca_fault_file = "/home/itchy/research/geodesy/global_block_comps/cca_blocks/block_data/cca_faults.geojson"
-cca_slip_rates_file = "/home/itchy/research/geodesy/global_block_comps/cca_blocks/block_data/cca_geol_slip_rates.geojson"
-ant_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/ant_slab2.geojson"
-cam_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/cam_slab2_fine.geojson"
-garnier_vels_file = "/home/itchy/research/geodesy/global_block_comps/cca_blocks/geod_data/garnier_et_al_2022_vels_igs08.geojson"
+cca_block_file = "../cca_blocks/block_data/cca_blocks.geojson"
+cca_fault_file = "../cca_blocks/block_data/cca_faults.geojson"
+cca_slip_rates_file = "../cca_blocks/block_data/cca_geol_slip_rates.geojson"
+ant_tris_file = "../subduction/sub_tri_meshes/ant_slab2.geojson"
+cam_tris_file = "../subduction/sub_tri_meshes/cam_slab2_fine.geojson"
+garnier_vels_file = "../cca_blocks/geod_data/garnier_et_al_2022_vels_igs08.geojson"
 
 # JPN
-jpn_block_file = "/home/itchy/research/geodesy/global_block_comps/japan_blocks/block_data/japan_blocks.geojson"
-jpn_fault_file = "/home/itchy/research/geodesy/global_block_comps/japan_blocks/block_data/japan_faults.geojson"
-izu_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/izu_slab2.geojson"
-ryu_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/ryu_slab2.geojson"
-kjp_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/kur_jpn_slab2.geojson"
+jpn_block_file = "../japan_blocks/block_data/japan_blocks.geojson"
+jpn_fault_file = "../japan_blocks/block_data/japan_faults.geojson"
+izu_tris_file = "../subduction/sub_tri_meshes/izu_slab2.geojson"
+ryu_tris_file = "../subduction/sub_tri_meshes/ryu_slab2.geojson"
+kjp_tris_file = "../subduction/sub_tri_meshes/kur_jpn_slab2.geojson"
 
 # PHL
-phl_block_file = "/home/itchy/research/geodesy/global_block_comps/phil_blocks/block_data/phl_blocks.geojson"
-phl_fault_file = "/home/itchy/research/geodesy/global_block_comps/phil_blocks/block_data/phl_faults.geojson"
+phl_block_file = "../phil_blocks/block_data/phl_blocks.geojson"
+phl_fault_file = "../phil_blocks/block_data/phl_faults.geojson"
 
 # EUR
-eur_block_file = "/home/itchy/research/geodesy/global_block_comps/eur_blocks/block_data/eur_blocks.geojson"
-eur_fault_file = "/home/itchy/research/geodesy/global_block_comps/eur_blocks/block_data/eur_faults.geojson"
+eur_block_file = "../eur_blocks/block_data/eur_blocks.geojson"
+eur_fault_file = "../eur_blocks/block_data/eur_faults.geojson"
+eur_slip_rates_file = "../eur_blocks/strain_data/eur_geol_slip_rates.geojson"
 
 # EAR
-ear_block_file = "/home/itchy/research/geodesy/global_block_comps/ears/block_data/ears_blocks.geojson"
-ear_fault_file = "/home/itchy/research/geodesy/global_block_comps/ears/block_data/ears_faults.geojson"
+ear_block_file = "../ears_blocks/block_data/ears_blocks.geojson"
+ear_fault_file = "../ears_blocks/block_data/ears_faults.geojson"
+
+# NAF
+naf_block_file = "../n_africa_blocks/block_data/n_africa_blocks.geojson"
+naf_fault_file = "../n_africa_blocks/block_data/n_africa_faults.geojson"
 
 # OCN
-ocn_block_file = "/home/itchy/research/geodesy/global_block_comps/oceania_blocks/block_data/oceania_blocks.geojson"
-ocn_fault_file = "/home/itchy/research/geodesy/global_block_comps/oceania_blocks/block_data/oceania_faults.geojson"
-ocn_slip_rates_file = "/home/itchy/research/geodesy/global_block_comps/oceania_blocks/block_data/oceania_geol_slip_rates.geojson"
+ocn_block_file = "../oceania_blocks/block_data/oceania_blocks.geojson"
+ocn_fault_file = "../oceania_blocks/block_data/oceania_faults.geojson"
+ocn_slip_rates_file = "../oceania_blocks/block_data/oceania_geol_slip_rates.geojson"
 # ocn tris
-png_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/png_slab2.geojson"
-phi_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/phi_slab2.geojson"
-man_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/man_slab2.geojson"
-cot_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/cot_slab2.geojson"
-sul_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/sul_slab2.geojson"
-sol_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/sol_slab2.geojson"
-sum_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/sum_slab2.geojson"
-van_tris_file = "/home/itchy/research/geodesy/global_block_comps/subduction/sub_tri_meshes/van_slab2.geojson"
+png_tris_file = "../subduction/sub_tri_meshes/png_slab2.geojson"
+phi_tris_file = "../subduction/sub_tri_meshes/phi_slab2.geojson"
+man_tris_file = "../subduction/sub_tri_meshes/man_slab2.geojson"
+cot_tris_file = "../subduction/sub_tri_meshes/cot_slab2.geojson"
+sul_tris_file = "../subduction/sub_tri_meshes/sul_slab2.geojson"
+sol_tris_file = "../subduction/sub_tri_meshes/sol_slab2.geojson"
+sum_tris_file = "../subduction/sub_tri_meshes/sum_slab2.geojson"
+van_tris_file = "../subduction/sub_tri_meshes/van_slab2.geojson"
 
 # other
-glo_block_file = "/home/itchy/research/geodesy/global_block_comps/global_scale_plates/global_scale_plates.geojson"
-glo_fault_file = "/home/itchy/research/geodesy/global_block_comps/global_scale_plates/global_scale_faults.geojson"
-glo_slip_rates_file = "/home/itchy/research/geodesy/global_block_comps/global_scale_plates/global_scale_slip_rates.geojson"
+glo_block_file = "../global_scale_plates/global_scale_plates.geojson"
+glo_fault_file = "../global_scale_plates/global_scale_faults.geojson"
+glo_slip_rates_file = "../global_scale_plates/global_scale_slip_rates.geojson"
 
 # Geod
-c_asia_gsrm_vels_file = "/home/itchy/research/geodesy/global_block_comps/c_asia_blocks/gnss_data/gsrm_c_asia_vels.geojson"
-comet_gnss_vels_file = "/home/itchy/research/geodesy/global_block_comps/c_asia_blocks/gnss_data/comet_c_asia_gnss_vels.geojson"
-tibet_vel_field_file = "/home/itchy/research/geodesy/global_block_comps/china/geod/tibet_vel_field_2021_12_06.geojson"
-gsrm_midas_ak_vels_file = "/home/itchy/research/geodesy/global_block_comps/cascadia_blocks/data/vels_consolidated.geojson"
-weiss_vel_field_file = "/home/itchy/research/geodesy/global_block_comps/anatolia/geod_data/weiss_et_al_2020_vels_down_100.geojson"
-daug_vel_file  = "/home/itchy/research/geodesy/global_block_comps/eur_blocks/strain_data/daugostino_vels.geojson"
-ana_vel_file = "/home/itchy/research/geodesy/global_block_comps/anatolia/geod_data/anatolia_gnss_rollins.geojson"
+c_asia_gsrm_vels_file = "../c_asia_blocks/gnss_data/gsrm_c_asia_vels.geojson"
+comet_gnss_vels_file = "../c_asia_blocks/gnss_data/comet_c_asia_gnss_vels.geojson"
+tibet_vel_field_file = "../china_active_faults/geod/tibet_vel_field_2021_12_06.geojson"
+gsrm_midas_ak_vels_file = "../cascadia_blocks/data/vels_consolidated.geojson"
+weiss_vel_field_file = "../anatolia_blocks/geod_data/weiss_et_al_2020_vels_down_100.geojson"
+daug_vel_file  = "../eur_blocks/strain_data/daugostino_vels.geojson"
+ana_vel_file = "../anatolia_blocks/geod_data/anatolia_gnss_rollins.geojson"
 
 
 # kur test bounds
@@ -135,6 +141,7 @@ ocn_blocks = Oiler.IO.gis_vec_file_to_df(ocn_block_file)
 phl_blocks = Oiler.IO.gis_vec_file_to_df(phl_block_file)
 eur_blocks = Oiler.IO.gis_vec_file_to_df(eur_block_file)
 ear_blocks = Oiler.IO.gis_vec_file_to_df(ear_block_file)
+naf_blocks = Oiler.IO.gis_vec_file_to_df(naf_block_file)
 glo_blocks = Oiler.IO.gis_vec_file_to_df(glo_block_file)
 
 block_df = vcat(cea_blocks, 
@@ -150,6 +157,7 @@ block_df = vcat(cea_blocks,
                 phl_blocks,
                 eur_blocks,
                 ear_blocks,
+                naf_blocks,
                 glo_blocks; 
                 cols=:union)
 
@@ -277,6 +285,7 @@ asia_fault_df, asia_faults, asia_fault_vels = Oiler.IO.process_faults_from_gis_f
                                         phl_fault_file,
                                         eur_fault_file,
                                         ear_fault_file,
+                                        naf_fault_file,
                                         block_df=block_df,
                                         subset_in_bounds=true,
                                         check_blocks=false)
@@ -357,6 +366,9 @@ nea_slip_rate_df = Oiler.IO.gis_vec_file_to_df(nea_slip_rate_file)
 cca_slip_rate_df = Oiler.IO.gis_vec_file_to_df(cca_slip_rates_file)
 ocn_slip_rate_df = Oiler.IO.gis_vec_file_to_df(ocn_slip_rates_file)
 glo_slip_rate_df = Oiler.IO.gis_vec_file_to_df(glo_slip_rates_file)
+eur_slip_rate_df = Oiler.IO.gis_vec_file_to_df(eur_slip_rates_file)
+ana_slip_rate_df = Oiler.IO.gis_vec_file_to_df(ana_slip_rates_file)
+
 
 asia_slip_rate_df = vcat(cea_slip_rate_df, 
                          chn_slip_rate_df, 
@@ -364,6 +376,8 @@ asia_slip_rate_df = vcat(cea_slip_rate_df,
                          cca_slip_rate_df,
                          ocn_slip_rate_df,
                          glo_slip_rate_df,
+                         eur_slip_rate_df,
+                         ana_slip_rate_df,
                          )
 asia_slip_rate_df, asia_slip_rate_vels = Oiler.IO.make_geol_slip_rate_vels!(
                                             asia_slip_rate_df, fault_df)
@@ -629,11 +643,11 @@ Oiler.ResultsAnalysis.compare_data_results(results=results,
 
 
 if save_results == true
+    if pred_se
     Oiler.IO.write_tri_results_to_gj(tris, results,
-                                     "../results/all_tris_no_errs.geojson",
+                                     "../results/all_tris.geojson",
                                      name="global tri results")
     
-    if pred_se
         Oiler.IO.write_fault_results_to_gj(results,
                                        "../results/global_faults.geojson",
                                        name="global fault results",
@@ -643,6 +657,10 @@ if save_results == true
                                        "../results/global_faults_no_errs.geojson",
                                        name="global fault results",
                                        calc_rake=true, calc_slip_rate=true)
+        Oiler.IO.write_tri_results_to_gj(tris, results,
+                                         "../results/all_tris_no_errs.geojson",
+                                         name="global tri results")
+    
     end
     Oiler.IO.write_gnss_vel_results_to_csv(results, vel_groups;
                                        name="../results/global_gnss_results.csv")
