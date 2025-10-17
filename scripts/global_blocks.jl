@@ -8,7 +8,12 @@ using DataFrames:eachrow
 using DataFrames, DataFramesMeta
 using Setfield
 
-using PyPlot
+
+plot_results = false
+
+if plot_results
+	using PyPlot
+end
 
 # options
 geol_slip_rate_weight = 2.
@@ -670,12 +675,14 @@ Oiler.WebViewer.write_web_viewer(results=results, block_df=block_df,
                                  directory="../web_viewer", ref_pole="na")
 
 
-#map_fig = Oiler.Plots.plot_results_map(results, vel_groups, faults, tris)
-#rates_fig = Oiler.Plots.plot_slip_rate_fig(geol_slip_rate_df, 
-#                                           geol_slip_rate_vels, 
-#                                           fault_df, results)
-#
-#show()
-#
-#println("done!")
+if plot_results
+    map_fig = Oiler.Plots.plot_results_map(results, vel_groups, faults, tris)
+    rates_fig = Oiler.Plots.plot_slip_rate_fig(geol_slip_rate_df, 
+                                               geol_slip_rate_vels, 
+                                               fault_df, results)
+    
+    show()
+end
+    
+println("done!")
 

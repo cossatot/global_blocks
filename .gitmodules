@@ -40,3 +40,9 @@
 [submodule "subduction"]
 	path = subduction
 	url = git@gitlab.com:cossatot/subduction.git
+[submodule "eur_blocks"]
+	path = eur_blocks
+	url = git@github.com:cossatot/eur_blocks
+[submodule "n_africa_blocks"]
+	path = n_africa_blocks
+	url = git@github.com:cossatot/n_africa_blocks

@@ -1,0 +1,120 @@
+[ Info: joining blocks
+n blocks: 1630
+[ Info: removing antarctica for now
+[ Info: doing GNSS
+[ Info:  doing comet gnss vels
+  1.088589 seconds (3.51 M allocations: 336.914 MiB, 8693.18% compilation time: <1% of which was recompilation)
+[ Info:  doing Asia gsrm vels
+  0.219980 seconds (2.25 M allocations: 291.994 MiB)
+[ Info:  doing Anatolia vels
+  0.208958 seconds (1.81 M allocations: 223.915 MiB)
+[ Info:  doing D'Augostino vels
+  0.516969 seconds (1.66 M allocations: 200.109 MiB, 32.25% gc time)
+[ Info:  doing comet insar vels
+  0.420881 seconds (4.35 M allocations: 543.117 MiB, 25.81% gc time, 0.76% compilation time)
+[ Info:  doing weiss insar vels
+  0.270403 seconds (2.93 M allocations: 409.675 MiB, 37.56% gc time, 1.19% compilation time)
+[ Info:  doing Garnier vels
+  0.372717 seconds (1.67 M allocations: 196.835 MiB, 0.89% compilation time)
+  0.166375 seconds (1.62 M allocations: 193.592 MiB)
+[ Info:  doing NAM-rel vels
+  0.613224 seconds (5.32 M allocations: 974.683 MiB, 54.12% gc time, 0.54% compilation time)
+[ Info:  doing NAM-rel vels (Antarctica)
+  0.088726 seconds (300.21 k allocations: 10.064 MiB)
+[ Info: re-adding Antarctica to blocks
+n gnss vels: 44652
+[ Info: doing faults
+┌ Warning: 67.51134264762703 mismatch with 337.5 (NNW)
+└ @ Oiler.Faults ~/geodesy/Oiler/src/faults.jl:235
+┌ Warning: reversing  trace
+└ @ Oiler.Faults ~/geodesy/Oiler/src/faults.jl:153
+┌ Warning: 67.52898945181659 mismatch with 337.5 (NNW)
+└ @ Oiler.Faults ~/geodesy/Oiler/src/faults.jl:235
+┌ Warning: reversing  trace
+└ @ Oiler.Faults ~/geodesy/Oiler/src/faults.jl:153
+n faults: 6333
+n fault vels: 23918
+[ Info: checking fault hw and fw
+n faults left: 6333
+[ Info: doing non-fault block boundaries
+[ Info: Doing non-fault block boundaries
+[ Info: ...getting shared block boundary sets
+[ Info: ...removing fault segments
+[ Info: ...sorting segments
+[ Info: ...making boundaries
+ 19.392512 seconds (34.34 M allocations: 1.618 GiB, 2.75% gc time, 7.39% compilation time)
+n non-fault-bound vels: 15327
+[ Info: doing geol slip rates
+n geol slip rates: 1094
+[ Info: doing Explorer and JdF plates
+[ Info: doing tris
+[ Info: kur tris
+[ Info: kjp tris
+[ Info: izu tris
+[ Info: ryu tris
+[ Info: alu tris
+[ Info: mak tris
+[ Info: ant tris
+[ Info: cam tris
+[ Info: sam tris
+[ Info: sol tris
+n tris: 6475
+[ Info: Solving
+[ Info: setting up unconstrained matrices
+[ Info:  making block inversion matrices
+  5.958769 seconds (4.48 M allocations: 33.835 GiB, 18.22% gc time, 4.67% compilation time)
+[ Info:   raw PvGb size: (255723, 19764)
+[ Info:  checking for NaNs
+[ Info: No NaNs in matrices
+[ Info:  doing locking
+[ Info:    calculating locking effects
+[ Info: 	prepping vels
+[ Info: 	sorting keys and grouping faults
+[ Info: 	calculating locking per fault group (parallel?)
+[ Info: 192 threads
+┌ Warning: NaN
+└ @ Oiler.Elastic ~/geodesy/Oiler/src/elastic.jl:70
+┌ Warning: 16361
+└ @ Oiler.Elastic ~/geodesy/Oiler/src/elastic.jl:71
+┌ Warning: Fault([-112.54374 38.33122; -112.5812 38.27126], 206.12942423414472, 50.0, "W", 0.0, 0.0, 0.0, 0.0, 0.0, 15.0, 0.0, "", "", "", "", "")
+└ @ Oiler.Elastic ~/geodesy/Oiler/src/elastic.jl:72
+┌ Warning: 32.7336, 39.708
+└ @ Oiler.Elastic ~/geodesy/Oiler/src/elastic.jl:74
+[ Info: 		making partials dicts
+[ Info: 	done calculating locking partials
+10573.606185 seconds (24.76 G allocations: 3.433 TiB, 96.78% gc time, 18.28% compilation time: <1% of which was recompilation)
+[ Info:    adding to PvGb
+631.016509 seconds (838.83 M allocations: 49.998 GiB, 57.16% gc time, 0.00% compilation time)
+[ Info:  done doing locking
+[ Info:  doing tris
+[ Info:    calculating tri locking partials
+566.502887 seconds (155.51 M allocations: 9.971 TiB, 73.35% gc time, 7.58% compilation time)
+[ Info:    done
+632.696363 seconds (325.58 M allocations: 10.065 TiB, 68.29% gc time, 6.98% compilation time)
+[ Info:  done doing tris
+[ Info:  checking for NaNs
+┌ Warning: NaNs in PvGb
+└ @ Oiler.Solver ~/geodesy/Oiler/src/solver.jl:599
+[ Info:  done making block inversion matrices
+12003.109547 seconds (25.93 G allocations: 13.617 TiB, 91.93% gc time, 16.47% compilation time: <1% of which was recompilation)
+[ Info: making constrained matrices
+[ Info:  finding vel cycles
+ 36.890101 seconds (456.26 M allocations: 10.463 GiB, 11.26% gc time, 1.46% compilation time: 9% of which was recompilation)
+[ Info:  done finding vel cycles
+[ Info:  Using weighted, constrained LLS
+1206.874310 seconds (462.66 M allocations: 139.140 GiB, 1.32% gc time, 0.24% compilation time: 3% of which was recompilation)
+[ Info: LHS block size (350439, 350439)
+[ Info: RHS size (350439,)
+[ Info: LU factorization
+664.636021 seconds (275.00 k allocations: 74.276 GiB, 0.05% gc time, 0.02% compilation time)
+[ Info:   Done with factorization
+[ Info: solving
+  2.296926 seconds (64.07 k allocations: 9.533 MiB, 2.29% compilation time)
+[ Info: RMSE: 12.080221707521078
+[ Info: Estimating solution uncertainties
+┌ Info: waiting for UmfpackLU's lock, it's safe to ignore this message.
+└ see the documentation for Umfpack
+[ Info: mean standard error: 45616.17389521924
+3093.142485 seconds (475.09 k allocations: 993.878 GiB, 1.00% gc time, 22.81% compilation time)
+16978.675466 seconds (26.41 G allocations: 14.799 TiB, 65.27% gc time, 15.85% compilation time: <1% of which was recompilation)
+done!
