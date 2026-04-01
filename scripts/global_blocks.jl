@@ -121,6 +121,7 @@ gsrm_midas_ak_vels_file = "../cascadia_blocks/data/vels_consolidated.geojson"
 weiss_vel_field_file = "../anatolia_blocks/geod_data/weiss_et_al_2020_vels_down_100.geojson"
 daug_vel_file  = "../eur_blocks/strain_data/daugostino_vels.geojson"
 ana_vel_file = "../anatolia_blocks/geod_data/anatolia_gnss_rollins.geojson"
+ahb_vel_file = "/hamhocks/research/geodesy/AHB_GPS/Elliott_etal_RSE_AHB_data/ENU_vels/ahb_vels_down_100_err_scale.csv"
 
 
 # kur test bounds
@@ -185,10 +186,13 @@ mora_vel_df = Oiler.IO.gis_vec_file_to_df(mora_vels_file)
 weiss_vel_field_df = Oiler.IO.gis_vec_file_to_df(weiss_vel_field_file)
 daug_vel_df = Oiler.IO.gis_vec_file_to_df(daug_vel_file)
 ana_vel_df = Oiler.IO.gis_vec_file_to_df(ana_vel_file)
+ahb_vel_df = Oiler.IO.gis_vec_file_to_df(ahb_vel_file)
 
 tib_vel_df[!,"station"] = string.(tib_vel_df[!,:fid])
 weiss_vel_field_df[!,"station"] = map(x->join(["weiss_", x]), 
                                       string.(weiss_vel_field_df[!,:fid]))
+ahb_vel_df[!,"fid"] = string.(1:nrow(ahb_vel_df))
+ahb_vel_df[!,"station"] = string.(ahb_vel_df[!,:fid])
 
 
 @info " doing comet gnss vels"
@@ -225,6 +229,13 @@ weiss_vel_field_df[!,"station"] = map(x->join(["weiss_", x]),
     ve=:e_vel, vn=:n_vel, ee=:e_err, en=:n_err, name=:station,
     fix="1111"
 )
+@info " doing AHB insar vels"
+@time ahb_vels = Oiler.IO.make_vels_from_gnss_and_blocks(
+    ahb_vel_df, block_df;
+    ve=:e_vel, vn=:n_vel, ee=:e_err, en=:n_err, name=:station,
+    fix="1111"
+)
+ahb_vels_down = ahb_vels[1:10:end]
 
 @info " doing Garnier vels"
 @time gar_vels = Oiler.IO.make_vels_from_gnss_and_blocks(gar_vel_df, block_df;
@@ -264,11 +275,12 @@ gnss_vels = vcat(com_vels,
                  cea_vels,
                  ana_vels,
                  dog_vels,
-                 tib_vels,
+                 #tib_vels,
                  gar_vels,
                  cas_vels,
                  ant_vels,
-                 wss_vels,
+                 #wss_vels,
+                 ahb_vels_down,
                  )
 
 println("n gnss vels: ", length(gnss_vels))
