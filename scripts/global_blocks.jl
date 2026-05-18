@@ -645,7 +645,7 @@ tri_distance_weight = 5.
             constraint_method="kkt_sym",
             check_nans=true,
             sparse_lhs=true,
-            factorization="lu")
+            factorization="reduce")
 
 Oiler.ResultsAnalysis.compare_data_results(results=results,
                                            vel_groups=vel_groups,
