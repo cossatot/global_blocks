@@ -61,6 +61,12 @@ sam_block_file ="../sam_blocks/block_data/sam_blocks.geojson"
 sam_fault_file ="../sam_blocks/block_data/sam_faults.geojson"
 sam_tris_file = "../subduction/sub_tri_meshes/sam_slab2_60.geojson"
 mora_vels_file = "../sam_blocks/block_data/mora_vels.geojson"
+weiss_sam_vels_file = "../sam_blocks/block_data/weiss_vels.geojson"
+mcfarland_vels_file = "../sam_blocks/block_data/mcfarland_vels.geojson"
+villegas_lanza_vels_file = "../sam_blocks/block_data/vill_vels.geojson"
+mariniere_vel_file = "../sam_blocks/block_data/mariniere_2020_vels.csv"
+gsrm_vels_file = "../global_scale_plates/gps_itrf08.geojson"
+midas_vels_file = "../global_scale_plates/midas_igs14_vels_trimmed.geojson"
 
 # CCA
 cca_block_file = "../cca_blocks/block_data/cca_blocks.geojson"
@@ -183,6 +189,14 @@ tib_vel_df = Oiler.IO.gis_vec_file_to_df(tibet_vel_field_file)
 cas_vel_df = Oiler.IO.gis_vec_file_to_df(gsrm_midas_ak_vels_file)
 gar_vel_df = Oiler.IO.gis_vec_file_to_df(garnier_vels_file)
 mora_vel_df = Oiler.IO.gis_vec_file_to_df(mora_vels_file)
+gsrm_vel_df = Oiler.IO.gis_vec_file_to_df(gsrm_vels_file)
+midas_vel_df = Oiler.IO.gis_vec_file_to_df(midas_vels_file)
+rename!(midas_vel_df, Dict(:site => :station))
+gsmd_vel_df = vcat(gsrm_vel_df, midas_vel_df, cols=:union)
+weiss_sam_vel_df = Oiler.IO.gis_vec_file_to_df(weiss_sam_vels_file)
+mcfarland_vel_df = Oiler.IO.gis_vec_file_to_df(mcfarland_vels_file)
+vill_vel_df = Oiler.IO.gis_vec_file_to_df(villegas_lanza_vels_file)
+#mari_vel_df = Oiler.IO.gis_vec_file_to_df(mariniere_vel_file, lon=:longitude, lat=:latitude)
 weiss_vel_field_df = Oiler.IO.gis_vec_file_to_df(weiss_vel_field_file)
 daug_vel_df = Oiler.IO.gis_vec_file_to_df(daug_vel_file)
 ana_vel_df = Oiler.IO.gis_vec_file_to_df(ana_vel_file)
@@ -247,6 +261,26 @@ ahb_vels_down = ahb_vels[1:10:end]
     fix="itrf14", epsg=102016,
     ve=:e_vel, vn=:n_vel, ee=:e_err, en=:n_err, name=:station
 )
+@time gsmd_vels = Oiler.IO.make_vels_from_gnss_and_blocks(gsmd_vel_df, block_df;
+    fix="igs08", epsg=102016,
+    ve=:e_vel, vn=:n_vel, ee=:e_err, en=:n_err, name=:station
+)
+@time weis_sam_vels = Oiler.IO.make_vels_from_gnss_and_blocks(weiss_sam_vel_df, block_df;
+    fix="1111", epsg=102016,
+    ve=:e_vel, vn=:n_vel, ee=:e_err, en=:n_err, name=:station
+)
+@time mcfa_vels = Oiler.IO.make_vels_from_gnss_and_blocks(mcfarland_vel_df, block_df;
+    fix="1111", epsg=102016,
+    ve=:e_vel, vn=:n_vel, ee=:e_err, en=:n_err, name=:station
+)
+@time vill_vels = Oiler.IO.make_vels_from_gnss_and_blocks(vill_vel_df, block_df;
+    fix="1111", epsg=102016,
+    ve=:e_vel, vn=:n_vel, ee=:e_err, en=:n_err, name=:site,
+)
+#@time mari_vels = Oiler.IO.make_vels_from_gnss_and_blocks(mari_vel_df, block_df;
+#    fix="2222", epsg=102016,
+#    ve=:ve, vn=:vn, ee=:se, en=:sn, name=:site,
+#)
 @info " doing NAM-rel vels"
 @time cas_vels = Oiler.IO.make_vels_from_gnss_and_blocks(cas_vel_df, block_df;
                                                            fix="na",
@@ -271,12 +305,18 @@ ahb_vels_down = ahb_vels[1:10:end]
 @info "re-adding Antarctica to blocks"
 block_df = vcat(block_df, ant_df)
 
-gnss_vels = vcat(com_vels, 
+gnss_vels = vcat(com_vels,
                  cea_vels,
                  ana_vels,
                  dog_vels,
                  #tib_vels,
                  gar_vels,
+                 mora_vels,
+                 gsmd_vels,
+                 weis_sam_vels,
+                 mcfa_vels,
+                 vill_vels,
+                 #mari_vels,
                  cas_vels,
                  ant_vels,
                  #wss_vels,
